@@ -20,4 +20,4 @@ Istd currently requires two defines `NDEBUG` which is defined when in release mo
 
 # Documentation 
 
-All functions and structs should be documented in header files.
+All functions, structs, enums and macros should be documented in header files.
