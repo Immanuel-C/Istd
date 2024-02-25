@@ -18,3 +18,6 @@ Istd is also mainly designed for x86_64 platforms. x86 may work but is not test 
 
 Istd currently requires two defines `NDEBUG` which is defined when in release mode and `DEBUG` which is defined when in debug mode. 
 
+# Documentation 
+
+All functions and structs should be documented in header files.
