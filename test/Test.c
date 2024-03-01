@@ -2,11 +2,7 @@
 
 #include <stdio.h>
 
-typedef struct test_t {
-	uint32_t x, y, z;
-} test;
-
-int main() {
+int main(void) {
 	istd_allocator defualt_allocator = istd_get_defualt_allocator();
 
 	istd_dynamic_array* dynamic_array = istd_dynamic_array_create(int, 2, &defualt_allocator);
@@ -23,7 +19,7 @@ int main() {
 
 	printf("Length: %zu, Capacity: %zu\n", istd_dynamic_array_length(dynamic_array), istd_dynamic_array_capacity(dynamic_array));
 
-	// istd_dynamic_array_shrink_to_fit(dynamic_array, &defualt_allocator);
+	istd_dynamic_array_shrink_to_fit(dynamic_array, &defualt_allocator);
 
 	val = 20;
 	istd_dynamic_array_push_back(dynamic_array, &val, &defualt_allocator);

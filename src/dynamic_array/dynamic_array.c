@@ -1,6 +1,6 @@
 #include "dynamic_array.h"
 
-#include "../safe/string_safe.h"
+#include "safe/string_safe.h"
 
 typedef struct _istd_dynamic_array_t {
 	size_t length;
@@ -70,9 +70,22 @@ void* _istd_dynamic_array_buffer(istd_dynamic_array* arr) {
 void istd_dynamic_array_shrink_to_fit(istd_dynamic_array* arr, istd_allocator* allocator) {
 	istd_assert(arr != istd_nullptr, "istd_dynamic_array_shrink_to_fit() failed. Given array is null.");
 	_istd_dynamic_array* dynamic_arr = (_istd_dynamic_array*)arr;
-	istd_assert(dynamic_arr->length > dynamic_arr->capacity, "istd_dynamic_array_shrink_to_fit() failed. The dynamic array length must be smaller than the capacity.");
+	istd_assert(dynamic_arr->length < dynamic_arr->capacity, "istd_dynamic_array_shrink_to_fit() failed. The dynamic array length must be smaller than the capacity.");
 	dynamic_arr->buf = allocator->realloc(dynamic_arr->buf, dynamic_arr->length * dynamic_arr->typeSize);
 	dynamic_arr->capacity = dynamic_arr->length;
+}
+
+void istd_dynamic_array_resize(istd_dynamic_array* arr, size_t new_length , istd_allocator* allocator) {
+	istd_assert(arr != istd_nullptr, "istd_dynamic_array_resize() failed. Given array is null.");
+	istd_assert(new_length != 0, "istd_dynamic_array_resize() failed. Given size must be greater than 0.");
+	istd_assert(allocator != istd_nullptr, "istd_dynamic_array_resize() failed. Given allocator must not be null.");
+
+	_istd_dynamic_array* dynamic_array = (_istd_dynamic_array*)arr;
+
+	dynamic_array->length = new_length;
+
+	if (dynamic_array->length > dynamic_array->capacity)
+		dynamic_array->buf = allocator->realloc(dynamic_array->buf, dynamic_array->typeSize * dynamic_array->length);
 }
 
 void istd_dynamic_array_free(istd_dynamic_array* arr, istd_allocator* allocator) {

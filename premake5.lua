@@ -2,6 +2,8 @@ workspace "Istd"
     configurations {"Debug", "Release"}
     architecture "x86_64"
 
+    warnings "Everything"
+
     function defaultBuildCfg()
         filter "configurations:Debug"
             defines { "DEBUG" }
@@ -48,6 +50,10 @@ workspace "Istd"
         files {
             "%{prj.location}/**.c",
             "%{prj.location}/**.h",
+        }
+
+        includedirs {
+            "%{prj.location}/"
         }
 
         defaultBuildLocation()

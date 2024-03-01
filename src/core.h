@@ -13,8 +13,10 @@ ISTD_EXTERN_C
 
 #if defined(__cplusplus)
 #include <cassert>
+#include <cstdbool>
 #else
 #include <assert.h>
+#include <stdbool.h>
 #endif
 
 #define istd_define_handle(name) typedef struct name##_t* name
@@ -43,18 +45,30 @@ ISTD_EXTERN_C
 #define istd_api
 #endif
 
-#if defined(_MSC_VER) || defined(__clang__)
+// Linux doesn't support calling conventions but MINGW does.
+
+#if defined(_WIN32) && (defined(_MSC_VER) || defined(__clang__))
 
 #define istd_cdecl __cdecl
 #define istd_stdcall __stdcall
 #define istd_fastcall __fastcall
 
-#elif defined(__MINGW32__) || defined(__GNUC__) 
+#elif (defined(__MINGW32__) || defined(__GNUC__)) && !defined(__linux__)
 
 #define istd_cdecl __attribute__((cdecl))
 #define istd_stdcall __attribute__((stdcall))
 #define istd_fastcall __attribute__((fastcall))
 
+#else
+
+#define istd_cdecl 
+#define istd_stdcall 
+#define istd_fastcall
+
+#endif
+
+#if defined(__linux__)
+#include <stddef.h>
 #endif
 
 #define istd_assert(condition, msg) assert((condition) && msg)
@@ -62,7 +76,7 @@ ISTD_EXTERN_C
 #define istd_ignore_return(fun) (void)fun
 
 typedef void* (istd_cdecl* istd_pfn_malloc)(size_t);
-typedef void* (istd_cdecl* istd_pfn_calloc)(size_t);
+typedef void* (istd_cdecl* istd_pfn_calloc)(size_t, size_t);
 typedef void* (istd_cdecl* istd_pfn_realloc)(void*, size_t);
 typedef void (istd_cdecl* istd_pfn_free)(void*);
 
@@ -73,51 +87,47 @@ typedef struct istd_allocator_t {
 	istd_pfn_free free;
 } istd_allocator;
 
-istd_api istd_allocator istd_stdcall istd_get_defualt_allocator();
-
+istd_api istd_allocator istd_stdcall istd_get_defualt_allocator(void);
 
 typedef enum istd_errno_values {
-	ISTD_ENONE        = 0,
-	ISTD_EPERM        = 1,
-	ISTD_ENOENT       = 2,
-	ISTD_ESRCH        = 3,
-	ISTD_EINTR        = 4,
-	ISTD_EIO          = 5,
-	ISTD_ENXIO        = 6,
-	ISTD_E2BIG        = 7,
-	ISTD_ENOEXEC      = 8,
-	ISTD_EBADF        = 9,
-	ISTD_ECHILD       = 10,
-	ISTD_EAGAIN       = 11,
-	ISTD_ENOMEM       = 12,
-	ISTD_EACCES       = 13,
-	ISTD_EFAULT       = 14,
-	ISTD_EBUSY        = 16,
-	ISTD_EEXIST       = 17,
-	ISTD_EXDEV        = 18,
-	ISTD_ENODEV       = 19,
-	ISTD_ENOTDIR      = 20,
-	ISTD_EISDIR       = 21,
-	ISTD_ENFILE       = 23,
-	ISTD_EMFILE       = 24,
-	ISTD_ENOTTY       = 25,
-	ISTD_EFBIG        = 27,
-	ISTD_ENOSPC       = 28,
-	ISTD_ESPIPE       = 29,
-	ISTD_EROFS        = 30,
-	ISTD_EMLINK       = 31,
-	ISTD_EPIPE        = 32,
-	ISTD_EDOM         = 33,
-	ISTD_EDEADLK      = 36,
+	ISTD_ENONE = 0,
+	ISTD_EPERM = 1,
+	ISTD_ENOENT = 2,
+	ISTD_ESRCH = 3,
+	ISTD_EINTR = 4,
+	ISTD_EIO = 5,
+	ISTD_ENXIO = 6,
+	ISTD_E2BIG = 7,
+	ISTD_ENOEXEC = 8,
+	ISTD_EBADF = 9,
+	ISTD_ECHILD = 10,
+	ISTD_EAGAIN = 11,
+	ISTD_ENOMEM = 12,
+	ISTD_EACCES = 13,
+	ISTD_EFAULT = 14,
+	ISTD_EBUSY = 16,
+	ISTD_EEXIST = 17,
+	ISTD_EXDEV = 18,
+	ISTD_ENODEV = 19,
+	ISTD_ENOTDIR = 20,
+	ISTD_EISDIR = 21,
+	ISTD_ENFILE = 23,
+	ISTD_EMFILE = 24,
+	ISTD_ENOTTY = 25,
+	ISTD_EFBIG = 27,
+	ISTD_ENOSPC = 28,
+	ISTD_ESPIPE = 29,
+	ISTD_EROFS = 30,
+	ISTD_EMLINK = 31,
+	ISTD_EPIPE = 32,
+	ISTD_EDOM = 33,
+	ISTD_EDEADLK = 36,
 	ISTD_ENAMETOOLONG = 38,
-	ISTD_ENOLCK       = 39,
-	ISTD_ENOSYS       = 40,
-	ISTD_ENOTEMPTY    = 41,
+	ISTD_ENOLCK = 39,
+	ISTD_ENOSYS = 40,
+	ISTD_ENOTEMPTY = 41,
+	ISTD_ERRNO_MAX
 } istd_errno;
-
-#if !defined(__cplusplus)
-#include <stdbool.h>
-#endif
 
 ISTD_END_EXTERN_C
 

@@ -1,7 +1,7 @@
 #if !defined(ISTD_ALLOCATOR)
 #define ISTD_ALLOCATOR
 
-#include "../core.h"
+#include "core.h"
 
 ISTD_EXTERN_C
 

@@ -2,7 +2,7 @@
 
 #include "allocator/allocator.h"
 
-istd_allocator istd_get_defualt_allocator() {
+istd_allocator istd_get_defualt_allocator(void) {
 	return (istd_allocator) {
 		.malloc = &istd_malloc_check,
 		.realloc = &istd_realloc_check,

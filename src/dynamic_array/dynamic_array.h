@@ -1,11 +1,11 @@
 #if !defined(ISTD_DYNAMIC_ARRAY)
 #define ISTD_DYNAMIC_ARRAY
 
-#include "../core.h"
+#include "core.h"
 
 ISTD_EXTERN_C
 
-#include "../allocator/allocator.h"
+#include "allocator/allocator.h"
 
 #include <stdint.h>
 
@@ -42,7 +42,6 @@ istd_api void* istd_stdcall _istd_dynamic_array_at(istd_dynamic_array* arr, size
 * @param allocator A pointer to a valid istd_allocator.
 */
 istd_api void istd_stdcall istd_dynamic_array_push_back(istd_dynamic_array* arr, void* val, istd_allocator* allocator);
-
 /**
 * @brief Remove the value to the end of the array.
 * @param arr the arr to pop back.
@@ -76,6 +75,13 @@ istd_api void* istd_stdcall _istd_dynamic_array_buffer(istd_dynamic_array* arr);
 * @param allocator A pointer to a valid istd_allocator.
 */
 istd_api void istd_stdcall istd_dynamic_array_shrink_to_fit(istd_dynamic_array* arr, istd_allocator* allocator);
+/**
+* @brief Resize the array.
+* @param arr the array to resize.
+* @param new_length the new length of the array.
+* @param allocator A pointer to a valid istd_allocator.
+*/
+istd_api void istd_stdcall istd_dynamic_array_resize(istd_dynamic_array* arr, size_t new_length, istd_allocator* allocator);
 /**
 * @brief Free dynamic array and set the pointer to istd_nullptr.
 * @param arr array to free.
