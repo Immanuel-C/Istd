@@ -1,6 +1,18 @@
 #include "dynamic_array/dynamic_array.h"
+#include "linked_list/singly_linked_list.h"
 
 #include <stdio.h>
+
+static void print_singly_linked_list_ints(istd_node* head) {
+	istd_node* next = head;
+
+	printf("Singly linked list:\n\t");
+
+	while (next != istd_nullptr) {
+		printf("%i,\n\t", *(int*)istd_singly_linked_list_get_buffer(next));
+		next = istd_singly_linked_list_next(next);
+	}
+}
 
 int main(void) {
 	istd_allocator defualt_allocator = istd_get_defualt_allocator();
@@ -29,4 +41,14 @@ int main(void) {
 	printf("Values: %i, %i, %i\n", *istd_dynamic_array_at(int, dynamic_array, 0), *istd_dynamic_array_at(int, dynamic_array, 1), *istd_dynamic_array_at(int, dynamic_array, 2));
 
 	istd_dynamic_array_free(dynamic_array, &defualt_allocator);
+
+	int i = 10;
+	istd_node* head = istd_singly_linked_list_node_create(&i, 1, sizeof(i), &defualt_allocator);
+	
+	int i2 = 2;
+	istd_singly_linked_list_push_front(&head, &i2, 1, sizeof(i2), &defualt_allocator);
+
+	print_singly_linked_list_ints(head);
+
+	istd_singly_linked_list_free(head, &defualt_allocator);
 }

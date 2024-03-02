@@ -5,13 +5,15 @@
 
 ISTD_EXTERN_C
 
-typedef struct istd_node_t {
-	void* buf;
-	void* next;
-} istd_node;
+istd_define_handle(istd_node);
 
-istd_api istd_node* istd_stdcall istd_singly_linked_list_create(void* buf, size_t buf_size, istd_allocator* allocator);
+istd_api istd_node* istd_stdcall istd_singly_linked_list_node_create(void* buf, size_t length, size_t type_size, istd_allocator* allocator);
 
+istd_api void istd_stdcall istd_singly_linked_list_push_front(istd_node** head, void* buf, size_t length, size_t type_size, istd_allocator* allocator);
+
+istd_api istd_node* istd_stdcall istd_singly_linked_list_next(istd_node* node);
+
+istd_api void* istd_stdcall istd_singly_linked_list_get_buffer(istd_node* node);
 
 istd_api void istd_stdcall istd_singly_linked_list_free(istd_node* head, istd_allocator* allocator);
 
