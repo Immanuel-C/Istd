@@ -2,6 +2,7 @@
 #include "linked_list/singly_linked_list.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 static void print_singly_linked_list_ints(istd_node* head) {
 	istd_node* next = head;
@@ -9,7 +10,7 @@ static void print_singly_linked_list_ints(istd_node* head) {
 	printf("Singly linked list:\n\t");
 
 	while (next != istd_nullptr) {
-		printf("%i,\n\t", *(int*)istd_singly_linked_list_get_buffer(next));
+		printf("%i,\n\t", *istd_singly_linked_list_get_buffer(int, next));
 		next = istd_singly_linked_list_next(next);
 	}
 }
@@ -47,6 +48,8 @@ int main(void) {
 	
 	int i2 = 2;
 	istd_singly_linked_list_push_front(&head, &i2, 1, sizeof(i2), &defualt_allocator);
+
+	istd_singly_linked_list_pop_front(&head, &defualt_allocator);
 
 	print_singly_linked_list_ints(head);
 

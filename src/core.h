@@ -129,6 +129,8 @@ typedef enum istd_errno_values {
 	ISTD_ERRNO_MAX
 } istd_errno;
 
+#include "salieri.h"
+
 ISTD_END_EXTERN_C
 
 #endif

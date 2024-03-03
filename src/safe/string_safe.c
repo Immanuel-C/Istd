@@ -14,7 +14,12 @@
 #endif
 
 
-istd_errno istd_memcpy_safe(void* dst, size_t dst_size, const void* src, size_t src_size) {
+istd_errno istd_memcpy_safe(
+	_Inout_updates_bytes_(dst_size)	void* dst,
+	_In_							size_t dst_size,
+	_In_reads_bytes_(src_size)		const void* src,
+	_In_						    size_t src_size
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)memcpy_s(dst, dst_size, src, src_size);
 	#else 
@@ -31,7 +36,12 @@ istd_errno istd_memcpy_safe(void* dst, size_t dst_size, const void* src, size_t 
 	#endif
 }
 
-istd_errno istd_memmove_safe(void* dst, size_t dst_size, const void* src, size_t src_size) {
+istd_errno istd_memmove_safe(
+	_Inout_updates_bytes_(dst_size) void* dst,
+	_In_					        size_t dst_size,
+	_In_reads_bytes_(src_size)      const void* src,
+	_In_					        size_t src_size
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)memmove_s(dst, dst_size, src, src_size);
 	#else 
@@ -50,7 +60,12 @@ istd_errno istd_memmove_safe(void* dst, size_t dst_size, const void* src, size_t
 
 // Most compilers dont implement this function.
 // Do simple checks and return.
-istd_errno istd_memset_safe(void* dst, size_t dst_size, uint8_t fill, size_t count) {
+istd_errno istd_memset_safe(
+	_Inout_updates_bytes_(dst_size)	void* dst,
+	_In_						    size_t dst_size,
+	_In_						    uint8_t fill,
+	_In_						    size_t count
+) {
 	istd_assert(dst != istd_nullptr, "istd_memset_safe() failed. dst is null");
 	istd_assert(dst_size != 0, "istd_memset_safe() failed. dst_size is 0");
 	istd_assert(count != 0, "istd_memset_safe() failed. count is 0");
@@ -60,7 +75,11 @@ istd_errno istd_memset_safe(void* dst, size_t dst_size, uint8_t fill, size_t cou
 	return ISTD_ENONE;
 }
 
-char* istd_strtok_safe(char* str, const char* delim, char** ptr) {
+char* istd_strtok_safe(
+	_In_z_	  char* str,
+	_In_z_	  const char* delim,
+	_Inout_z_ char** ptr
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return strtok_s(str, delim, ptr);
 	#else
@@ -69,7 +88,11 @@ char* istd_strtok_safe(char* str, const char* delim, char** ptr) {
 }
 
 
-istd_errno istd_strcpy_safe(char* dst, size_t dst_size, const char* src) {
+istd_errno istd_strcpy_safe(
+	_Inout_updates_z_(dst_size) char* dst,
+	_In_					    size_t dst_size,
+	_In_z_					    const char* src
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)strcpy_s(dst, dst_size, src);
 	#else
@@ -85,7 +108,11 @@ istd_errno istd_strcpy_safe(char* dst, size_t dst_size, const char* src) {
 	#endif
 }
 
-istd_errno istd_wcscpy_safe(wchar_t* dst, size_t dst_size, const wchar_t* src) {
+istd_errno istd_wcscpy_safe(
+	_Inout_updates_z_(dst_size) wchar_t* dst,
+	_In_				        size_t dst_size,
+	_In_z_				        const wchar_t* src
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)wcscpy_s(dst, dst_size, src);
 	#else
@@ -101,7 +128,12 @@ istd_errno istd_wcscpy_safe(wchar_t* dst, size_t dst_size, const wchar_t* src) {
 	#endif
 }
 
-istd_errno istd_strncpy_safe(char* dst, size_t dst_size, const char* src, size_t count) {
+istd_errno istd_strncpy_safe(
+	_Inout_updates_(dst_size) char* dst,
+	_In_				      size_t dst_size,
+	_In_				      const char* src,
+	_In_				      size_t count
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)strncpy_s(dst, dst_size, src, count);
 	#else
@@ -118,7 +150,12 @@ istd_errno istd_strncpy_safe(char* dst, size_t dst_size, const char* src, size_t
 	#endif
 }
 
-istd_api istd_errno istd_stdcall istd_wcsncpy_safe(wchar_t* dst, size_t dst_size, const wchar_t* src, size_t count) {
+istd_api istd_errno istd_stdcall istd_wcsncpy_safe(
+	_Inout_updates_(dst_size) wchar_t* dst,
+	_In_				      size_t dst_size,
+	_In_				      const wchar_t* src,
+	_In_				      size_t count
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)wcsncpy_s(dst, dst_size, src, count);
 	#else
@@ -135,7 +172,11 @@ istd_api istd_errno istd_stdcall istd_wcsncpy_safe(wchar_t* dst, size_t dst_size
 	#endif
 }
 
-istd_api istd_errno istd_stdcall istd_strcat_safe(char* dst, size_t dst_size, const char* src) {
+istd_api istd_errno istd_stdcall istd_strcat_safe(
+	_Inout_updates_z_(dst_size) char* dst,
+	_In_				        size_t dst_size,
+	_In_z_				        const char* src
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)strcat_s(dst, dst_size, src);
 	#else
@@ -151,7 +192,11 @@ istd_api istd_errno istd_stdcall istd_strcat_safe(char* dst, size_t dst_size, co
 	#endif
 }
 
-istd_api istd_errno istd_stdcall istd_wcscat_safe(wchar_t* dst, size_t dst_size, const wchar_t* src) {
+istd_api istd_errno istd_stdcall istd_wcscat_safe(
+	_Inout_updates_z_(dst_size) wchar_t* dst,
+	_In_				        size_t dst_size,
+	_In_z_			            const wchar_t* src
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)wcscat_s(dst, dst_size, src);
 	#else
@@ -167,7 +212,12 @@ istd_api istd_errno istd_stdcall istd_wcscat_safe(wchar_t* dst, size_t dst_size,
 	#endif
 }
 
-istd_api istd_errno istd_stdcall istd_strncat_safe(char* dst, size_t dst_size, const char* src, size_t count) {
+istd_api istd_errno istd_stdcall istd_strncat_safe(
+	_Inout_updates_z_(dst_size) char* dst,
+	_In_				        size_t dst_size,
+	_In_z_				        const char* src,
+	_In_				        size_t count
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)strncat_s(dst, dst_size, src, count);
 	#else
@@ -184,7 +234,12 @@ istd_api istd_errno istd_stdcall istd_strncat_safe(char* dst, size_t dst_size, c
 	#endif
 }
 
-istd_api istd_errno istd_stdcall istd_wcsncat_safe(wchar_t* dst, size_t dst_size, const wchar_t* src, size_t count) {
+istd_api istd_errno istd_stdcall istd_wcsncat_safe(
+	_Inout_updates_z_(dst_size) wchar_t* dst,
+	_In_					    size_t dst_size,
+	_In_z_				        const wchar_t* src,
+	_In_					    size_t count
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)wcsncat_s(dst, dst_size, src, count);
 	#else
@@ -201,7 +256,11 @@ istd_api istd_errno istd_stdcall istd_wcsncat_safe(wchar_t* dst, size_t dst_size
 	#endif
 }
 
-istd_errno istd_strerror_safe(char* buf, size_t buf_size, istd_errno err) {
+istd_errno istd_strerror_safe(
+	_Inout_updates_z_(buf_size) char* buf,
+	_In_					    size_t buf_size,
+	_In_					    istd_errno err
+) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
 	return (istd_errno)strerror_s(buf, buf_size, (int)err);
 	#else

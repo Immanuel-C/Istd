@@ -53,7 +53,7 @@ workspace "Istd"
         }
 
         includedirs {
-            "%{prj.location}/"
+            "%{prj.location}/",
         }
 
         defaultBuildLocation()
