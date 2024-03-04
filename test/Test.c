@@ -16,6 +16,7 @@ static void* print_singly_linked_list_ints(istd_node* head) {
 		next = istd_singly_linked_list_next(next);
 	}
 
+
 	return 0;
 }
 
@@ -30,6 +31,8 @@ static void* istd_stdcall thread_fun(void* arg) {
 
 	info->retval = 50;
 
+  getchar();
+  
 	return 0;
 }
 
@@ -96,9 +99,11 @@ int main(void) {
 
 	istd_thread thread = istd_thread_create(thread_fun, &info);
 
+  istd_assert(thread != istd_nullptr, "Created thread is null");
+
 	istd_thread_join(thread);
 
-	printf("Thread return value: %zu", info.retval);
+	printf("Thread return value: %zu\n", info.retval);
 
 	return 0;
 }

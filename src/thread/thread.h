@@ -1,4 +1,5 @@
-#pragma once
+#if !defined(ISTD_THREAD_H)
+#define ISTD_THREAD_H
 
 #include "core.h"
 
@@ -9,7 +10,6 @@ ISTD_EXTERN_C
 istd_api void istd_stdcall istd_this_thread_sleep(
 	_In_ uint32_t miliseconds
 );
-
 
 istd_define_handle(istd_thread);
 
@@ -32,3 +32,5 @@ istd_api void istd_stdcall istd_thread_join(
 );
 
 ISTD_END_EXTERN_C
+
+#endif

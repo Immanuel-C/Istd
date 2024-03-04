@@ -2,7 +2,7 @@ workspace "Istd"
     configurations {"Debug", "Release"}
     architecture "x86_64"
 
-    warnings "Everything"
+    warnings "Extra"
 
     function defaultBuildCfg()
         filter "configurations:Debug"
@@ -27,7 +27,7 @@ workspace "Istd"
         location "test"
         kind "ConsoleApp"
         language "C"
-        cdialect "C17"
+        cdialect "C11"
 
         files {
             "%{prj.location}/**.c",
@@ -45,7 +45,7 @@ workspace "Istd"
         location "src"
         kind "StaticLib"
         language "C"
-        cdialect "C17"
+        cdialect "C11"
 
         files {
             "%{prj.location}/**.c",
@@ -55,8 +55,6 @@ workspace "Istd"
         includedirs {
             "%{prj.location}/",
         }
-
-        
 
         defaultBuildLocation()
 

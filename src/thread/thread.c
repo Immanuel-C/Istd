@@ -10,11 +10,11 @@ typedef HANDLE istd_native_thread_handle;
 #define _istd_native_sleep(mili) Sleep(mili)
 // MacOs/Linux
 #else
-#error Istd does not support multi-threading on any other platform except windows for now.
 #include <unistd.h>
+#include <pthread.h>
+typedef pthread_t istd_native_thread_handle;
 #define _istd_native_sleep(mili) sleep(mili * 0.001)
 #endif
-
 
 
 istd_api void istd_stdcall istd_this_thread_sleep(
@@ -34,8 +34,12 @@ istd_thread istd_thread_create(
 	istd_native_thread_handle thread_handle = (istd_native_thread_handle)_beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
 
 	#else
+  
+  istd_native_thread_handle thread_handle;
 
-
+  if (pthread_create((pthread_t*)&thread_handle, istd_nullptr, thread_fun, thread_fun_arg) != 0) {
+    return istd_nullptr;
+  }
 
 	#endif
 	
@@ -51,12 +55,21 @@ istd_thread_id istd_thread_get_id(
 
 	#else
 
+  return (istd_thread_id)thread;
 
 	#endif
 }
 
 istd_thread_id istd_thread_get_current_id(void) {
-	return GetCurrentThreadId();
+  #if defined(_WIN32)
+
+  return GetCurrentThreadId();
+
+  #else
+
+  return (istd_thread_id)pthread_self();
+
+  #endif
 }
 
 void istd_thread_join(
@@ -73,5 +86,8 @@ void istd_thread_join(
 
 	#else
 
+  pthread_join(thread_handle, istd_nullptr);
+  thread = istd_nullptr;
+  
 	#endif
 }
