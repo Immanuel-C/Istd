@@ -23,8 +23,8 @@ istd_api void istd_stdcall istd_singly_linked_list_push_front(
 );
 
 istd_api void istd_stdcall istd_singly_linked_list_pop_front(
-	_Inout_updates_(1) istd_node** head,
-	_In_			   istd_allocator* allocator
+	_Inout_ istd_node** head,
+	_In_    istd_allocator* allocator
 );
 
 istd_api istd_node* istd_stdcall istd_singly_linked_list_next(

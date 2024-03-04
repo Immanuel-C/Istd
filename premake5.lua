@@ -56,5 +56,13 @@ workspace "Istd"
             "%{prj.location}/",
         }
 
+        
+
         defaultBuildLocation()
+
+        filter "system:windows"
+            links { 
+                "Kernel32" 
+            }
+
         defaultBuildCfg()

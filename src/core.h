@@ -21,6 +21,7 @@ ISTD_EXTERN_C
 
 #define istd_define_handle(name) typedef struct name##_t* name
 
+
 #if defined(__cplusplus)
 #define istd_nullptr nullptr
 #else
@@ -53,17 +54,23 @@ ISTD_EXTERN_C
 #define istd_stdcall __stdcall
 #define istd_fastcall __fastcall
 
+#define istd_disable_warning(code) __pragma(warning(suppress: code))
+
 #elif (defined(__MINGW32__) || defined(__GNUC__)) && !defined(__linux__)
 
 #define istd_cdecl __attribute__((cdecl))
 #define istd_stdcall __attribute__((stdcall))
 #define istd_fastcall __attribute__((fastcall))
 
+#define istd_disable_warning(code) 
+
 #else
 
 #define istd_cdecl 
 #define istd_stdcall 
 #define istd_fastcall
+
+#define istd_disable_warning(code) 
 
 #endif
 

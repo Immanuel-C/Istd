@@ -38,8 +38,8 @@ void istd_singly_linked_list_push_front(
 }
 
 void istd_singly_linked_list_pop_front(
-	_Inout_updates_(1) istd_node** head,
-	_In_			   istd_allocator* allocator
+	_Inout_ istd_node** head,
+	_In_    istd_allocator* allocator
 ) {
 	_istd_node* old_head = (_istd_node*)*head;
 
