@@ -9,7 +9,7 @@ ISTD_EXTERN_C
 istd_define_handle(istd_timer);
 
 /**
-* @brief Used to specify time units for timers.
+* @brief Used to specify time units for timers
 */
 typedef enum istd_time_units_values {
 	ISTD_NANOSECONDS,
@@ -19,15 +19,29 @@ typedef enum istd_time_units_values {
 } istd_time_units;
 
 /**
-* Star
+* @brief Start timer
+* @returns A timer handle
 */
 istd_api istd_timer istd_stdcall istd_timer_start(void);
 
+/**
+* @brief get the time since the timer was started
+* @param timer The timer handle
+* @param unit the timer unit that the timer will return
+* @returns the time since the timer was started
+*/
 istd_api double istd_stdcall istd_timer_now(
 	_In_ istd_timer timer,
 	_In_ istd_time_units unit
 );
 
+
+/**
+* @brief get the time since the timer was started and free it
+* @param timer the timer handle
+* @param unit the timer unit that the timer will return
+* @returns the timer since the timer was started
+*/
 istd_api double istd_stdcall istd_timer_end(
 	_Inout_ istd_timer timer,
 	_In_    istd_time_units unit

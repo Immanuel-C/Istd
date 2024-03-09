@@ -18,76 +18,76 @@ typedef pthread_t istd_native_thread_handle;
 
 
 istd_api void istd_stdcall istd_this_thread_sleep(
-	_In_ uint32_t miliseconds
+    _In_ uint32_t miliseconds
 ) {
-	_istd_native_sleep(miliseconds);
+    _istd_native_sleep(miliseconds);
 }
 
 istd_thread istd_thread_create(
-	_In_	 istd_pfn_thread thread_fun,
-	_In_opt_ void* thread_fun_arg
+    _In_	 istd_pfn_thread thread_fun,
+    _In_opt_ void* thread_fun_arg
 ) {
 
-	#if defined(_WIN32)
+    #if defined(_WIN32)
 
-	istd_disable_warning(4191)
-	istd_native_thread_handle thread_handle = (istd_native_thread_handle)_beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
+    istd_disable_warning(4191)
+    istd_native_thread_handle thread_handle = (istd_native_thread_handle)_beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
 
-	#else
+    #else
   
-  istd_native_thread_handle thread_handle;
+    istd_native_thread_handle thread_handle;
 
-  if (pthread_create((pthread_t*)&thread_handle, istd_nullptr, thread_fun, thread_fun_arg) != 0) {
-    return istd_nullptr;
-  }
+    if (pthread_create((pthread_t*)&thread_handle, istd_nullptr, thread_fun, thread_fun_arg) != 0) {
+        return istd_nullptr;
+    }
 
-	#endif
-	
-	return (istd_thread)thread_handle;
+    #endif
+    
+    return (istd_thread)thread_handle;
 }
 
 istd_thread_id istd_thread_get_id(
-	_In_ istd_thread thread
+    _In_ istd_thread thread
 ) {
-	#if defined(_WIN32)
+    #if defined(_WIN32)
 
-	return GetThreadId((istd_native_thread_handle)thread);
+    return GetThreadId((istd_native_thread_handle)thread);
 
-	#else
+    #else
 
-  return (istd_thread_id)thread;
+    return (istd_thread_id)thread;
 
-	#endif
+    #endif
 }
 
 istd_thread_id istd_thread_get_current_id(void) {
-  #if defined(_WIN32)
+    #if defined(_WIN32)
 
-  return GetCurrentThreadId();
+    return GetCurrentThreadId();
 
-  #else
+    #else
 
-  return (istd_thread_id)pthread_self();
+    return (istd_thread_id)pthread_self();
 
-  #endif
+    #endif
 }
 
 void istd_thread_join(
-	_Inout_ istd_thread thread
+    _In_ _Post_ptr_invalid_ istd_thread thread
 ) {
-	istd_native_thread_handle thread_handle = (istd_native_thread_handle)thread;
+    istd_native_thread_handle thread_handle = (istd_native_thread_handle)thread;
 
-	#if defined(_WIN32)
+    #if defined(_WIN32)
 
-	WaitForSingleObject(thread_handle, INFINITE);
-	CloseHandle(thread_handle);
+    WaitForSingleObject(thread_handle, INFINITE);
+    CloseHandle(thread_handle);
 
-	thread = istd_nullptr;
+    thread = istd_nullptr;
 
-	#else
+    #else
 
-  pthread_join(thread_handle, istd_nullptr);
-  thread = istd_nullptr;
+    pthread_join(thread_handle, istd_nullptr);
+    thread = istd_nullptr;
   
-	#endif
+    #endif
 }

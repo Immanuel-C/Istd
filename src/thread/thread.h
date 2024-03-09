@@ -28,7 +28,7 @@ istd_api istd_thread_id istd_stdcall istd_thread_get_id(
 istd_api istd_thread_id istd_stdcall istd_thread_get_current_id(void);
 
 istd_api void istd_stdcall istd_thread_join(
-	_Inout_ istd_thread thread
+	_In_ _Post_ptr_invalid_ istd_thread thread
 );
 
 ISTD_END_EXTERN_C
