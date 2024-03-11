@@ -2,15 +2,16 @@
 
 #include <stdlib.h>
 #include "safe/string_safe.h"
+#include <stdio.h>
 
 typedef struct _istd_unordered_map_item_t {
-	size_t key;
+	void* key;
 	void* value;
+	struct _istd_unordered_map_item_t* next;
 } _istd_unordered_map_item;
 
-typedef struct _istd_unordered_map_t {
+typedef struct {
 	_istd_unordered_map_item** items;
-	size_t length;
 	size_t capacity;
 	size_t type_size;
 	istd_pfn_hash_function hash_function;
@@ -21,89 +22,188 @@ istd_unordered_map _istd_unordered_map_create(
 	_In_ const size_t capacity,
 	_In_ istd_pfn_hash_function hash_function
 ) {
-	_istd_unordered_map* map = (_istd_unordered_map*)malloc((size_t)sizeof(_istd_unordered_map));
+	_istd_unordered_map* map = malloc(sizeof(_istd_unordered_map));
 
-	if (!map) return istd_nullptr;
+	if (map == istd_nullptr) 
+		return istd_nullptr;
 
-	map->items = calloc(capacity, sizeof(_istd_unordered_map_item*));
+	size_t items_size = capacity * sizeof(_istd_unordered_map_item*);
+	map->items = malloc(items_size);
 
-	if (!map->items) { 
+	if (map->items == istd_nullptr) {
 		free(map);
-		return istd_nullptr; 
+		return istd_nullhnd;
 	}
 
-	map->type_size = type_size;
-	map->length = 0;
 	map->capacity = capacity;
+	map->type_size = type_size;
 	map->hash_function = hash_function;
+
+	for (size_t i = 0; i < capacity; i++) 
+		map->items[i] = istd_nullptr;
 
 	return (istd_unordered_map)map;
 }
 
-int istd_unordered_map_insert(
+static inline void istd_stdcall _istd_free_item(
+	_Pre_valid_ _Post_invalid_ _istd_unordered_map_item* item
+) {
+	free(item->key);
+	free(item->value);
+	free(item);
+}
+
+static _istd_unordered_map_item* istd_stdcall _istd_create_item(
+	_Inout_ _istd_unordered_map* map,
+	_In_ const void* key,
+	_In_ size_t key_size,
+	_In_ const void* value
+) {
+	_istd_unordered_map_item* item = malloc(sizeof(_istd_unordered_map_item));
+
+	if (item == istd_nullptr) 
+		return istd_nullptr;
+
+	item->key = malloc(key_size);
+
+	if (item->key == istd_nullptr) {
+		free(item);
+		return istd_nullptr;
+	}
+
+	item->value = malloc(map->type_size);
+
+	if (item->value == istd_nullptr) {
+		free(item->key);
+		free(item);
+		return istd_nullptr;
+	}
+
+	item->next = istd_nullptr;
+
+	if (istd_memcpy_safe(item->key, key_size, key, key_size) != ISTD_ENONE || 
+		istd_memcpy_safe(item->value, map->type_size, value, map->type_size) != ISTD_ENONE) {
+		_istd_free_item(item);
+		return istd_nullptr;
+	}
+
+	return item;
+}
+
+istd_result istd_unordered_map_insert(
 	_Inout_ istd_unordered_map map,
 	_In_ const void* key,
 	_In_ size_t key_size,
 	_In_ const void* value
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
-
-	if (_map == istd_nullptr) return ISTD_EFAULT;
-	if (_map->capacity == _map->length) return ISTD_ENOMEM;
-
-	_istd_unordered_map_item** item = &_map->items[_map->length];
-
-	(*item) = malloc(sizeof(_istd_unordered_map_item));
 	
-	if ((*item) == istd_nullptr) return ISTD_EFAULT;
+	_istd_unordered_map_item* item = _istd_create_item(_map, key, key_size, value);
 
-	(*item)->key = _map->hash_function(key, key_size);
+	if (item == istd_nullptr)
+		return ISTD_RESULT_ALLOCATION_FAILED;
 
-	(*item)->value = malloc(_map->type_size);
+	size_t index = _map->hash_function(key, key_size) % _map->capacity;
 
-	if ((*item)->value == istd_nullptr) {
-		free((*item));
-		return ISTD_EFAULT; 
-	}
+	// Empty slot
+	if (_map->items[index] == istd_nullptr) 
+		_map->items[index] = item;
+	// Collision
+	else 
+		_map->items[index]->next = item;
 
-	istd_memcpy_safe((*item)->value, _map->type_size, value, _map->type_size);
-
-	_map->length++;
-
-	return 0;
+	return ISTD_RESULT_SUCCESS;
 }
 
-void* istd_unordered_map_search(
+istd_result istd_unordered_map_erase(
 	_Inout_ istd_unordered_map map,
 	_In_	const void* key,
-	_In_	const size_t key_size
+	_In_	size_t key_size
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
 
-	if (_map == istd_nullptr || key == istd_nullptr || key_size == 0)
+	size_t index = _map->hash_function(key, key_size) % _map->capacity;
+
+	_istd_unordered_map_item* item = _map->items[index];
+	_istd_unordered_map_item* prev = istd_nullptr;
+
+	while (item != istd_nullptr) {
+		if (item->key == istd_nullptr	|| 
+			item->value == istd_nullptr || 
+			memcmp(item->key, key, key_size) != 0
+		) {
+			prev = item;
+			item = item->next;
+			continue;
+		}
+
+		// The item is the head
+		if (prev == istd_nullptr) 
+			_map->items[index] = item->next;
+		// The item is not the head
+		else
+			prev->next = item->next;
+
+		_istd_free_item(item);
+
+		return ISTD_RESULT_SUCCESS;
+	}
+
+	return ISTD_RESULT_NOT_FOUND;
+}
+
+void* _istd_unordered_map_search(
+	_In_ istd_unordered_map map,
+	_In_ const void* key,
+	_In_ const size_t key_size
+) {
+	_istd_unordered_map* _map = (_istd_unordered_map*)map;
+
+	size_t index = _map->hash_function(key, key_size) % _map->capacity;
+
+	_istd_unordered_map_item* item = _map->items[index];
+
+	if (item == istd_nullptr)
 		return istd_nullptr;
 
-	for (size_t i = 0; i < _map->length; i++) 
-		if (_map->items[i]->key == _map->hash_function(key, key_size)) return _map->items[i]->value;
+	while (item != istd_nullptr) {
+		if (memcmp(item->key, key, key_size) == 0)
+			return item->value;
+
+		item = item->next;
+	}
 
 	return istd_nullptr;
 }
 
-int istd_unordered_map_free(
-	_Inout_ istd_unordered_map* map
+istd_result istd_unordered_map_free(
+	_Pre_valid_ _Post_invalid_ istd_unordered_map map
 ) {
-	_istd_unordered_map* _map = (_istd_unordered_map*)(*map);
+	_istd_unordered_map* _map = (_istd_unordered_map*)map;
+	
+	if (_map == istd_nullptr)
+		return ISTD_RESULT_PARAMETER_NULL;
 
-	if (_map == istd_nullptr || map == istd_nullptr)
-		return ISTD_EFAULT;
+	for (size_t i = 0; i < _map->capacity; i++) {
+		_istd_unordered_map_item* item = _map->items[i];
 
-	for (size_t i = 0; i < _map->length; i++) {
-		free(_map->items[i]->value);
-		free(_map->items[i]);
+		if (item == istd_nullptr)
+			continue;
+
+		_istd_unordered_map_item* tmp = istd_nullptr;
+
+		while (item != istd_nullptr) {
+			tmp = item;
+
+			item = item->next;
+
+			_istd_free_item(tmp);
+		}
+
 	}
 
 	free(_map->items);
 	free(_map);
-	map = istd_nullptr;
-}
 
+	return ISTD_RESULT_SUCCESS;
+}

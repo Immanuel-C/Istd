@@ -20,7 +20,7 @@ ISTD_EXTERN_C
 #endif
 
 #define istd_define_handle(name) typedef struct name##_t* name
-
+#define istd_nullhnd (void*)0
 
 #if defined(__cplusplus)
 #define istd_nullptr nullptr
@@ -135,6 +135,13 @@ typedef enum istd_errno_values {
 	ISTD_ENOTEMPTY = 41,
 	ISTD_ERRNO_MAX
 } istd_errno;
+
+typedef enum {
+	ISTD_RESULT_SUCCESS = 0,
+	ISTD_RESULT_ALLOCATION_FAILED = 1,
+	ISTD_RESULT_NOT_FOUND = 2,
+	ISTD_RESULT_PARAMETER_NULL = 3,
+} istd_result;
 
 #include "salieri.h"
 

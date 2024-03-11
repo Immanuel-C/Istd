@@ -63,7 +63,7 @@ istd_thread_id istd_thread_get_id(
 istd_thread_id istd_thread_get_current_id(void) {
     #if defined(_WIN32)
 
-    return GetCurrentThreadId();
+    return (istd_thread_id)GetCurrentThreadId();
 
     #else
 
@@ -73,7 +73,7 @@ istd_thread_id istd_thread_get_current_id(void) {
 }
 
 void istd_thread_join(
-    _In_ _Post_ptr_invalid_ istd_thread thread
+    _Pre_valid_ _Post_invalid_ istd_thread thread
 ) {
     istd_native_thread_handle thread_handle = (istd_native_thread_handle)thread;
 
@@ -81,8 +81,6 @@ void istd_thread_join(
 
     WaitForSingleObject(thread_handle, INFINITE);
     CloseHandle(thread_handle);
-
-    thread = istd_nullptr;
 
     #else
 
