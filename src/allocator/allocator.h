@@ -5,23 +5,11 @@
 
 ISTD_EXTERN_C
 
-istd_api void* istd_cdecl istd_malloc_check( 
-		_In_ size_t size
-	);
+istd_api istd_allocator* istd_stdcall istd_get_defualt_allocator(void);
 
-istd_api void* istd_cdecl istd_calloc_check(
-		_In_ size_t count, 
-		_In_ size_t size
-	);
-
-istd_api void* istd_cdecl istd_realloc_check(
-		_In_ void* buf, 
-		_In_ size_t newSize
-	);
-
-istd_api void istd_cdecl istd_free_check( 
-		_In_ void* buf
-	);
+istd_api void istd_stdcall istd_set_defualt_allocator(
+	_In_ istd_allocator* new_allocator
+);
 
 ISTD_END_EXTERN_C
 

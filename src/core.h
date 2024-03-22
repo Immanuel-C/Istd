@@ -11,22 +11,22 @@
 
 ISTD_EXTERN_C
 
-#if defined(__cplusplus)
-#include <cassert>
-#include <cstdbool>
-#else
 #include <assert.h>
+#include "salieri.h"
+
 #include <stdbool.h>
-#endif
 
 #define istd_define_handle(name) typedef struct name##_t* name
-#define istd_nullhnd (void*)0
 
 #if defined(__cplusplus)
 #define istd_nullptr nullptr
 #else
 #define istd_nullptr (void*)0
+
 #endif
+
+#define istd_nullhnd istd_nullptr
+
 
 #if defined(ISTD_DLL)
 #if defined(ISTD_EXPORT_DLL)
@@ -56,6 +56,8 @@ ISTD_EXTERN_C
 
 #define istd_disable_warning(code) __pragma(warning(suppress: code))
 
+#define istd_pragma(command) __pragma(command)
+
 #elif (defined(__MINGW32__) || defined(__GNUC__)) && !defined(__linux__)
 
 #define istd_cdecl __attribute__((cdecl))
@@ -63,6 +65,8 @@ ISTD_EXTERN_C
 #define istd_fastcall __attribute__((fastcall))
 
 #define istd_disable_warning(code) 
+
+#define istd_pragma(command) 
 
 #else
 
@@ -72,6 +76,18 @@ ISTD_EXTERN_C
 
 #define istd_disable_warning(code) 
 
+#define istd_pragma(command)
+
+#endif
+
+#if defined(_MSC_VER)
+
+#define istd_force_inline __forceinline
+
+#else 
+
+#define istd_force_inline __attribute__((always_inline))
+
 #endif
 
 #if defined(__linux__)
@@ -80,12 +96,14 @@ ISTD_EXTERN_C
 
 #define istd_assert(condition, msg) assert((condition) && msg)
 
-#define istd_ignore_return(fun) (void)fun
+#define istd_ignore_return(fun) (void)(fun)
+#define istd_unused_parameter(param) (void)(param)
 
-typedef void* (istd_cdecl* istd_pfn_malloc)(size_t);
-typedef void* (istd_cdecl* istd_pfn_calloc)(size_t, size_t);
-typedef void* (istd_cdecl* istd_pfn_realloc)(void*, size_t);
-typedef void (istd_cdecl* istd_pfn_free)(void*);
+
+typedef void* (istd_cdecl* istd_pfn_malloc)(size_t size);
+typedef void* (istd_cdecl* istd_pfn_calloc)(size_t num_elements, size_t type_size);
+typedef void* (istd_cdecl* istd_pfn_realloc)(void* ptr, size_t new_size);
+typedef void (istd_cdecl* istd_pfn_free)(void* ptr);
 
 typedef struct istd_allocator_t {
 	istd_pfn_malloc malloc;
@@ -94,7 +112,6 @@ typedef struct istd_allocator_t {
 	istd_pfn_free free;
 } istd_allocator;
 
-istd_api istd_allocator istd_stdcall istd_get_defualt_allocator(void);
 
 typedef enum istd_errno_values {
 	ISTD_ENONE = 0,
@@ -141,9 +158,10 @@ typedef enum {
 	ISTD_RESULT_ALLOCATION_FAILED = 1,
 	ISTD_RESULT_NOT_FOUND = 2,
 	ISTD_RESULT_PARAMETER_NULL = 3,
+	ISTD_RESULT_PARAMETER_INVALID = 4,
+	ISTD_RESULT_ACCESS_OUT_OF_BOUNDS = 5,
 } istd_result;
 
-#include "salieri.h"
 
 ISTD_END_EXTERN_C
 

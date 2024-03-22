@@ -169,7 +169,7 @@ istd_api istd_errno istd_stdcall istd_wcsncat_safe(
 /**
 * @brief Converts an error code to a string. Calls strerror_s, if it is not available then call strerror and do basic checks.
 * @param buf string that will get the error code in string format.
-* @param dst_size the amount of characters in the destination string.
+* @param buf_size the amount of characters in the destination string.
 */
 istd_api istd_errno istd_stdcall istd_strerror_safe(
 	_Inout_updates_z_(buf_size) char* buf, 

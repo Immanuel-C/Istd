@@ -21,7 +21,7 @@ istd_errno istd_memcpy_safe(
 	_In_						    size_t src_size
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)memcpy_s(dst, dst_size, src, src_size);
+	return (istd_errno)(int)memcpy_s(dst, dst_size, src, src_size);
 	#else 
 
 	istd_assert(dst != istd_nullptr, "istd_memcpy_safe() failed. dst is null");
@@ -43,7 +43,7 @@ istd_errno istd_memmove_safe(
 	_In_					        size_t src_size
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)memmove_s(dst, dst_size, src, src_size);
+	return (istd_errno)(int)memmove_s(dst, dst_size, src, src_size);
 	#else 
 
 	istd_assert(dst != istd_nullptr, "istd_memmove_safe() failed. dst is null");
@@ -94,7 +94,7 @@ istd_errno istd_strcpy_safe(
 	_In_z_					    const char* src
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)strcpy_s(dst, dst_size, src);
+	return (istd_errno)(int)strcpy_s(dst, dst_size, src);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_strcpy_safe() failed. dst is null");
@@ -114,7 +114,7 @@ istd_errno istd_wcscpy_safe(
 	_In_z_				        const wchar_t* src
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)wcscpy_s(dst, dst_size, src);
+	return (istd_errno)(int)wcscpy_s(dst, dst_size, src);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_wcstrcpy_safe() failed. dst is null");
@@ -135,7 +135,7 @@ istd_errno istd_strncpy_safe(
 	_In_				      size_t count
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)strncpy_s(dst, dst_size, src, count);
+	return (istd_errno)(int)strncpy_s(dst, dst_size, src, count);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_strncpy_safe() failed. dst is null");
@@ -157,7 +157,7 @@ istd_api istd_errno istd_stdcall istd_wcsncpy_safe(
 	_In_				      size_t count
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)wcsncpy_s(dst, dst_size, src, count);
+	return (istd_errno)(int)wcsncpy_s(dst, dst_size, src, count);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_wcsncpy_safe() failed. dst is null");
@@ -178,7 +178,7 @@ istd_api istd_errno istd_stdcall istd_strcat_safe(
 	_In_z_				        const char* src
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)strcat_s(dst, dst_size, src);
+	return (istd_errno)(int)strcat_s(dst, dst_size, src);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_strcat_safe() failed. dst is null");
@@ -198,7 +198,7 @@ istd_api istd_errno istd_stdcall istd_wcscat_safe(
 	_In_z_			            const wchar_t* src
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)wcscat_s(dst, dst_size, src);
+	return (istd_errno)(int)wcscat_s(dst, dst_size, src);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_wcscat_safe() failed. dst is null");
@@ -219,7 +219,7 @@ istd_api istd_errno istd_stdcall istd_strncat_safe(
 	_In_				        size_t count
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)strncat_s(dst, dst_size, src, count);
+	return (istd_errno)(int)strncat_s(dst, dst_size, src, count);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_strncat_safe() failed. dst is null");
@@ -241,7 +241,7 @@ istd_api istd_errno istd_stdcall istd_wcsncat_safe(
 	_In_					    size_t count
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)wcsncat_s(dst, dst_size, src, count);
+	return (istd_errno)(int)wcsncat_s(dst, dst_size, src, count);
 	#else
 
 	istd_assert(dst != istd_nullptr, "istd_wcsncat_safe() failed. dst is null");
@@ -262,7 +262,7 @@ istd_errno istd_strerror_safe(
 	_In_					    istd_errno err
 ) {
 	#if defined(ISTD_LIB_EXT) || defined(_MSC_VER) || defined(__clang__)
-	return (istd_errno)strerror_s(buf, buf_size, (int)err);
+	return (istd_errno)(int)strerror_s(buf, buf_size, (int)err);
 	#else
 
 	istd_assert(buf != istd_nullptr, "istd_strerror_safe() failed. buf is null");

@@ -4,13 +4,13 @@
 
 #include <stdlib.h>
 
-typedef struct _istd_timer_t {
+typedef struct {
 	clock_t start;
-} _istd_timer;
+} __istd_timer;
 
 
 istd_timer istd_timer_start(void) {
-	_istd_timer* timer = malloc(sizeof(_istd_timer));
+	__istd_timer* timer = malloc(sizeof(__istd_timer));
 	if (timer == istd_nullptr) return istd_nullptr;
 
 	timer->start = clock();
@@ -27,7 +27,7 @@ double istd_timer_now(
 	_In_ istd_timer timer,
 	_In_ istd_time_units unit
 ) { 
-	_istd_timer* _timer = (_istd_timer*)timer;
+	__istd_timer* _timer = (__istd_timer*)timer;
 	clock_t end = clock();
 
 	if (end == -1) return -1.0;
@@ -56,7 +56,7 @@ double istd_timer_end(
 	_In_    istd_time_units unit
 ) {
 	double delta = istd_timer_now(timer, unit);
-	free((_istd_timer*)timer);
+	free((__istd_timer*)timer);
 	timer = istd_nullptr;
 	return delta;
 }

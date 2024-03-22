@@ -2,25 +2,22 @@
 
 #include <stdlib.h>
 
-void* istd_malloc_check(_In_ size_t size) {
-	void* buf = malloc(size);
-	istd_assert(buf != istd_nullptr, "istd_malloc_check() failed. Allocated buffer is null!");
-	return buf;
+static istd_allocator allocator = {
+	.malloc = malloc,
+	.calloc = calloc,
+	.realloc = realloc,
+	.free = free,
+};
+
+istd_allocator* istd_get_defualt_allocator(void) {
+	return &allocator;
 }
 
-void* istd_calloc_check(_In_ size_t count, _In_ size_t size) {
-	void* buf = calloc(count, size);
-	istd_assert(buf != istd_nullptr, "istd_malloc_check() failed. Allocated buffer is null!");
-	return buf;
-}
-
-void* istd_realloc_check(_In_ void* buf, _In_ size_t newSize) {
-	void* newBuf = realloc(buf, newSize);
-	istd_assert(newBuf != istd_nullptr, "istd_realloc_check() failed. Allocated buffer is null!");
-	return newBuf;
-}
-
-void istd_free_check(_In_ void* buf) {
-	istd_assert(buf != istd_nullptr, "istd_free_check() failed. Given buffer is null!");
-	free(buf);
+void istd_set_defualt_allocator(
+	_In_ istd_allocator* new_allocator
+) {
+	allocator.malloc = new_allocator->malloc;
+	allocator.calloc = new_allocator->calloc;
+	allocator.realloc = new_allocator->realloc;
+	allocator.free = new_allocator->free;
 }

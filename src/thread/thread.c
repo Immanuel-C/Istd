@@ -4,7 +4,7 @@
 // must link with Kernel32.
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN      
-#include <windows.h>
+#include <Windows.h>
 #include <process.h>
 typedef HANDLE istd_native_thread_handle;
 #define _istd_native_sleep(mili) Sleep(mili)
@@ -31,7 +31,9 @@ istd_thread istd_thread_create(
     #if defined(_WIN32)
 
     istd_disable_warning(4191)
-    istd_native_thread_handle thread_handle = (istd_native_thread_handle)_beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
+    uintptr_t win32_thread_handle = _beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
+
+    istd_native_thread_handle thread_handle = (istd_native_thread_handle)win32_thread_handle;
 
     #else
   
@@ -51,7 +53,7 @@ istd_thread_id istd_thread_get_id(
 ) {
     #if defined(_WIN32)
 
-    return GetThreadId((istd_native_thread_handle)thread);
+    return (istd_thread_id)GetThreadId((istd_native_thread_handle)thread);
 
     #else
 

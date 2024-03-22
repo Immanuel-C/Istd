@@ -18,13 +18,13 @@ uint64_t istd_high_resolution_now_ns(void) {
 	#if defined(_WIN32)
 	LARGE_INTEGER counter, freq;
 
-	if (QueryPerformanceFrequency(&freq) == 0)
+	if (QueryPerformanceFrequency(&freq) == FALSE)
 		return 0;
-	if (QueryPerformanceCounter(&counter) == 0)
+	if (QueryPerformanceCounter(&counter) == FALSE)
 		return 0;
 
 	// Convert to nanoseconds
-	counter.QuadPart *= 1000000000;
+	counter.QuadPart *= (LONGLONG)1000000000;
 	counter.QuadPart /= freq.QuadPart;
 
 	return (uint64_t)counter.QuadPart;
