@@ -54,11 +54,11 @@ typedef struct {
 
 typedef struct {
 	union {
-		istd_float128 x, i, r, width;
+		istd_float64_128 x, i, r, width;
 	};
 
 	union {
-		istd_float128 y, j, g, height;
+		istd_float64_128 y, j, g, height;
 	};
 } istd_vector2_f128;
 
@@ -125,15 +125,15 @@ typedef struct {
 
 typedef struct {
 	union {
-		istd_float128 x, i, r, width;
+		istd_float64_128 x, i, r, width;
 	};
 
 	union {
-		istd_float128 y, j, g, height;
+		istd_float64_128 y, j, g, height;
 	};
 
 	union {
-		istd_float128 z, k, b, depth;
+		istd_float64_128 z, k, b, depth;
 	};
 } istd_vector3_f128;
 
@@ -215,19 +215,19 @@ typedef struct {
 
 typedef struct {
 	union {
-		istd_float128 x, i, r, width;
+		istd_float64_128 x, i, r, width;
 	};
 
 	union {
-		istd_float128 y, j, g, height;
+		istd_float64_128 y, j, g, height;
 	};
 
 	union {
-		istd_float128 z, k, b, depth;
+		istd_float64_128 z, k, b, depth;
 	};
 
 	union {
-		istd_float128 w,    a;
+		istd_float64_128 w,    a;
 	};
 } istd_vector4_f128;
 

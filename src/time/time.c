@@ -23,14 +23,14 @@ istd_timer istd_timer_start(void) {
 	return (istd_timer)timer;
 }
 
-double istd_timer_now(
+istd_float64 istd_timer_now(
 	_In_ istd_timer timer,
 	_In_ istd_time_units unit
 ) { 
 	__istd_timer* _timer = (__istd_timer*)timer;
 	clock_t end = clock();
 
-	if (end == -1) return -1.0;
+	if (end == -1) return 0.0;
 
 	double time_seconds = (double)(end - _timer->start) / CLOCKS_PER_SEC;
 
@@ -51,7 +51,7 @@ double istd_timer_now(
 	return -1.0;
 }
 
-double istd_timer_end(
+istd_float64 istd_timer_end(
 	_Inout_ istd_timer timer,
 	_In_    istd_time_units unit
 ) {

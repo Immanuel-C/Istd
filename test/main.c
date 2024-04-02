@@ -8,7 +8,6 @@
 #include "tests/io/io_test.h"
 
 int main(void) {
-
 	istd_test(test_dynamic_array, "Dynamic Array");
 	istd_test(test_linked_list, "Linked List");
 	istd_test(test_time, "Timer/High Resolution");

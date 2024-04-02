@@ -120,7 +120,9 @@ _Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_insert(
 		_map->items[index] = item;
 	// Collision
 	else 
-		_map->items[index]->next = (struct __istd_unordered_map_item_t*)item;
+		// MSVC and both produce warnings when trying to cast to (struct __istd_unordered_map_item_t*) and setting next to it.
+		// Setting but casting to void does not produce this error. 
+		_map->items[index]->next = (void*)item;
 
 	return ISTD_RESULT_SUCCESS;
 }

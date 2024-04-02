@@ -12,7 +12,7 @@ ISTD_EXTERN_C
 
 typedef float istd_float32;
 typedef double istd_float64;
-typedef long double istd_float128;
+typedef long double istd_float64_128;
 
 ISTD_END_EXTERN_C
 

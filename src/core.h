@@ -12,9 +12,10 @@
 ISTD_EXTERN_C
 
 #include <assert.h>
-#include "salieri.h"
-
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "salieri.h"
 
 #define istd_define_handle(name) typedef struct name##_t* name
 
@@ -26,7 +27,6 @@ ISTD_EXTERN_C
 #endif
 
 #define istd_nullhnd istd_nullptr
-
 
 #if defined(ISTD_DLL)
 #if defined(ISTD_EXPORT_DLL)
@@ -97,8 +97,7 @@ ISTD_EXTERN_C
 #define istd_assert(condition, msg) assert((condition) && msg)
 
 #define istd_ignore_return(fun) (void)(fun)
-#define istd_unused_parameter(param) (void)(param)
-
+#define istd_unused_parameter(param) (void)(sizeof(param))
 
 typedef void* (istd_cdecl* istd_pfn_malloc)(size_t size);
 typedef void* (istd_cdecl* istd_pfn_calloc)(size_t num_elements, size_t type_size);
@@ -111,7 +110,6 @@ typedef struct istd_allocator_t {
 	istd_pfn_realloc realloc;
 	istd_pfn_free free;
 } istd_allocator;
-
 
 typedef enum istd_errno_values {
 	ISTD_ENONE = 0,
@@ -162,6 +160,7 @@ typedef enum {
 	ISTD_RESULT_ACCESS_OUT_OF_BOUNDS = 5,
 } istd_result;
 
+typedef uint64_t istd_flags;
 
 ISTD_END_EXTERN_C
 

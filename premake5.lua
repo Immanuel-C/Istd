@@ -60,7 +60,8 @@ workspace "Istd"
 
         filter "system:windows"
             links { 
-                "Kernel32" 
+                "Kernel32",
+                "Shcore"
             }
 
         defaultBuildCfg()

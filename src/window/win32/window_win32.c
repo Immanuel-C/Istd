@@ -12,21 +12,37 @@
 #include "window/window_enums.h"
 #include "window/window_callbacks.h"
 
+#include "safe/string_safe.h"
+
 #include <stddef.h>
 #include <time.h>
 
-// Forces MSVC to not add padding
-istd_pragma(pack(push, 1))
 typedef struct {
 	HWND hwnd;
 	HDC hdc;
 	HINSTANCE hinstance;
-	const wchar_t* title;
+
+	HCURSOR hcursor;
+	HICON hicon;
+
+	wchar_t* title;
 	const wchar_t* class_name;
-	istd_vector2_i32 size, framebuffer_size;
+	void* user_ptr;
+
+	istd_vector2_i32 size, framebuffer_size, old_size;
 	istd_vector2_i32 position, mouse_position;
 	istd_vector2_f32 scroll_offset;
+
+	istd_allocator allocator;
+	
+	istd_window_callbacks callbacks;
+
+	clock_t time_created;
+
+	uint64_t style;
+
 	bool running;
+	bool fullscreen;
 	bool iconified;
 	bool maximized;
 	bool focused;
@@ -34,34 +50,25 @@ typedef struct {
 
 	bool keys[(size_t)ISTD_KEY_MAX];
 	bool mouse_buttons[(size_t)ISTD_MOUSE_BUTTON_MAX];
-
-	void* user_ptr;
-
-	istd_allocator allocator;
-	
-	istd_window_callbacks callbacks;
-
-	clock_t time_created;
 } __istd_window_win32;
-istd_pragma(pack(pop))
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-istd_key_modifier istd_stdcall __istd_window_win32_get_key_modifiers(void) {
-	istd_key_modifier mods = ISTD_KEY_MOD_NONE;
+static istd_key_modifier_flags istd_stdcall __istd_window_win32_get_key_modifiers(void) {
+	istd_key_modifier_flags mods = ISTD_KEY_MOD_NONE_BIT;
 
 	if (GetKeyState(VK_SHIFT) & 0x8000)
-		mods |= ISTD_KEY_MOD_SHIFT;
+		mods |= ISTD_KEY_MOD_SHIFT_BIT;
 	if (GetKeyState(VK_CONTROL) & 0x8000)
-		mods |= ISTD_KEY_MOD_CONTROL;
+		mods |= ISTD_KEY_MOD_CONTROL_BIT;
 	if (GetKeyState(VK_MENU) & 0x8000)
-		mods |= ISTD_KEY_MOD_ALT;
+		mods |= ISTD_KEY_MOD_ALT_BIT;
 	if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000)
-		mods |= ISTD_KEY_MOD_SUPER;
+		mods |= ISTD_KEY_MOD_SUPER_BIT;
 	if (GetKeyState(VK_CAPITAL) & 1)
-		mods |= ISTD_KEY_MOD_CAPS_LOCK;
+		mods |= ISTD_KEY_MOD_CAPS_LOCK_BIT;
 	if (GetKeyState(VK_NUMLOCK) & 1)
-		mods |= ISTD_KEY_MOD_NUM_LOCK;
+		mods |= ISTD_KEY_MOD_NUM_LOCK_BIT;
 
 	return mods;
 }
@@ -81,11 +88,27 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 
 	__istd_window_win32* window = alloc->malloc(sizeof(__istd_window_win32));
 
-	if (window == istd_nullptr) return istd_nullhnd;
+	if (window == istd_nullptr) 
+		return istd_nullhnd;
 
-	window->title = title;
+	size_t title_length = wcslen(title) + 1;
+
+	window->title = alloc->malloc(title_length * sizeof(wchar_t));
+
+	if (window->title == istd_nullptr) {
+		alloc->free(window);
+		return istd_nullhnd;
+	}
+
+	if (istd_wcscpy_safe(window->title, title_length, title) != ISTD_ENONE) {
+		alloc->free(window->title);
+		alloc->free(window);
+		return istd_nullhnd;
+	}
+
 	window->size.width = width;
 	window->size.height = height;
+	window->old_size = window->size;
 	window->framebuffer_size = window->size;
 	window->position.x = x;
 	window->position.y = y;
@@ -105,17 +128,22 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 
 	window->hinstance = (HINSTANCE)GetModuleHandleW(istd_nullptr);
 
+	window->hcursor = LoadCursorW(window->hinstance, IDC_ARROW);
+	window->hicon = LoadIconW(window->hinstance, IDI_APPLICATION);
+
+	window->style = WS_OVERLAPPEDWINDOW;
+
 	WNDCLASSEXW wc = { 0 };
-	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.lpfnWndProc = window_callback;
 	wc.hInstance = window->hinstance;
 	wc.lpszClassName = window->class_name;
 	wc.style = CS_OWNDC;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-	wc.hCursor = istd_nullptr;
-	wc.hIcon = istd_nullptr;
+	wc.hCursor = window->hcursor;
+	wc.hIcon = window->hicon;
 
-	if (!RegisterClassExW(&wc)) {
+	if (RegisterClassExW(&wc) == FALSE) {
 		alloc->free(window);
 		return istd_nullhnd;
 	}
@@ -124,7 +152,7 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 		WS_EX_APPWINDOW,
 		(LPCWSTR)window->class_name,
 		(LPCWSTR)title,
-		WS_OVERLAPPEDWINDOW,
+		(DWORD)window->style,
 		(int)window->position.x,
 		(int)window->position.y,
 		(int)window->size.width,
@@ -137,7 +165,7 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 
 	if (window->hwnd == istd_nullhnd) {
 		alloc->free(window);
-		UnregisterClassW(window->class_name, window->hinstance);
+		istd_ignore_return(UnregisterClassW(window->class_name, window->hinstance));
 		return istd_nullhnd;
 	}
 
@@ -145,16 +173,16 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 
 	if (window->hdc == istd_nullptr) {
 		alloc->free(window);
-		UnregisterClassW(window->class_name, window->hinstance);
-		DestroyWindow(window->hwnd);
+		istd_ignore_return(UnregisterClassW(window->class_name, window->hinstance));
+		istd_ignore_return(DestroyWindow(window->hwnd));
 		return istd_nullhnd;
 	}
 
-	DragAcceptFiles(window->hwnd, TRUE); 
+	istd_ignore_return(DragAcceptFiles(window->hwnd, TRUE));
 
-	SetWindowLongPtrW(window->hwnd, GWLP_USERDATA, (LONG_PTR)window);
+	istd_ignore_return(SetWindowLongPtrW(window->hwnd, GWLP_USERDATA, (LONG_PTR)window));
 
-	ShowWindow(window->hwnd, TRUE);
+	istd_ignore_return(ShowWindow(window->hwnd, TRUE));
 
 	window->time_created = clock();
 
@@ -185,13 +213,6 @@ void istd_window_win32_wait_event(
 ) {
 	istd_ignore_return(WaitMessage());
 	istd_window_win32_update(window);
-}
-
-void istd_window_win32_close(
-	_In_ istd_window_win32 window
-) {
-	__istd_window_win32* _window = (__istd_window_win32*)window;
-	_window->running = false;
 }
 
 _Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_win32_set_callback(
@@ -259,6 +280,11 @@ _Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_win32_set_ca
 			_window->callbacks.character = (istd_pfn_char_callback)callback_fun;
 			break;
 
+		case ISTD_CALLBACK_TYPE_DPI:
+			old_callback = (void*)_window->callbacks.dpi;
+			_window->callbacks.dpi = (istd_pfn_dpi_callback)callback_fun;
+			break;
+
 		case ISTD_CALLBACK_TYPE_PATH_DROP:
 			old_callback = (void*)_window->callbacks.path_drop;
 			_window->callbacks.path_drop = (istd_pfn_path_drop_callback)callback_fun;
@@ -271,16 +297,82 @@ _Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_win32_set_ca
 	return old_callback;
 }
 
+const wchar_t* istd_window_win32_title(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->title;
+}
+
+void istd_window_win32_set_title(
+	_In_   istd_window_win32 window,
+	_In_z_ const wchar_t* new_title
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	size_t new_title_length = wcslen(new_title) + 1;
+	_window->title = _window->allocator.realloc(_window->title, new_title_length);
+
+	if (_window->title == istd_nullptr)
+		return;
+
+	if (istd_wcscpy_safe(_window->title, new_title_length, new_title) != ISTD_ENONE)
+		return;
+
+	istd_ignore_return(SetWindowTextW(_window->hwnd, _window->title));
+}
+
 istd_vector2_i32 istd_window_win32_size(
 	_In_ istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->size;
 }
 
+istd_api istd_vector2_i32 istd_stdcall istd_window_win32_framebuffer_size(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->framebuffer_size;
+}
+
+void istd_window_win32_set_size(
+	_In_ istd_window_win32 window,
+	_In_ istd_vector2_i32 new_size
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+	_window->size = new_size;
+
+	istd_ignore_return(SetWindowPos(
+		_window->hwnd,
+		istd_nullptr,
+		(int)_window->position.x,
+		(int)_window->position.y,
+		(int)_window->size.x,
+		(int)_window->size.y,
+		SWP_NOMOVE | SWP_NOZORDER | SWP_SHOWWINDOW
+	));
+}
+
 istd_vector2_i32 istd_window_win32_position(
 	_In_ istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->position;
+}
+
+void istd_window_win32_set_position(
+	_In_ istd_window_win32 window,
+	_In_ const istd_vector2_i32 new_position
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+	_window->position = new_position;
+
+	istd_ignore_return(SetWindowPos(
+		_window->hwnd,
+		istd_nullptr,
+		(int)_window->position.x,
+		(int)_window->position.y,
+		(int)_window->size.x,
+		(int)_window->size.y,
+		SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW
+	));
 }
 
 istd_vector2_f32 istd_window_win32_mouse_scroll_offset(
@@ -295,10 +387,29 @@ istd_vector2_i32 istd_window_win32_mouse_position(
 	return ((__istd_window_win32*)window)->mouse_position;
 }
 
+void istd_window_win32_set_mouse_position(
+	_In_ istd_window_win32 window,
+	_In_ istd_vector2_i32 new_mouse_position
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	POINT pt = { 0 };
+	pt.x = (LONG)new_mouse_position.x;
+	pt.y = (LONG)new_mouse_position.y;
+
+	if (ClientToScreen(_window->hwnd, &pt) == FALSE) 
+		return;
+
+	_window->mouse_position.x = pt.x;
+	_window->mouse_position.y = pt.y;
+
+	istd_ignore_return(SetCursorPos(_window->mouse_position.x, _window->mouse_position.y));
+}
+
 bool istd_window_win32_mouse_button_down(
 	_In_ istd_window_win32 window,
 	_In_ istd_mouse_button button,
-	_In_ istd_key_modifier mods
+	_In_ istd_key_modifier_flags mods
 ) {
 	return (((__istd_window_win32*)window)->mouse_buttons[(size_t)button] == true) && ((__istd_window_win32_get_key_modifiers() & mods) == mods);
 }
@@ -307,7 +418,7 @@ bool istd_window_win32_mouse_button_down(
 bool istd_window_win32_key_down(
 	_In_ istd_window_win32 window,
 	_In_ istd_key key,
-	_In_ istd_key_modifier mods
+	_In_ istd_key_modifier_flags mods
 ) {
 	return (((__istd_window_win32*)window)->keys[(size_t)key] == true) && ((__istd_window_win32_get_key_modifiers() & mods) == mods);
 }
@@ -546,6 +657,152 @@ istd_float64 istd_window_win32_get_time_ms(
 	return ((istd_float64)(clock() - ((__istd_window_win32*)window)->time_created) / CLOCKS_PER_SEC) * 1000;
 }
 
+void istd_window_win32_center(
+	_In_ istd_window_win32 window,
+	_In_ istd_monitor_win32 monitor
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	istd_monitor_win32 primary_monitor = istd_monitor_win32_primary(istd_nullptr);
+
+	if (primary_monitor == istd_nullhnd)
+		return;
+
+	istd_vector2_i32 monitor_position = istd_monitor_win32_position(monitor),
+				     monitor_size = istd_monitor_win32_size(monitor),
+					 primary_monitor_position = istd_monitor_win32_position(primary_monitor),
+					 offset = { 0 };
+
+	offset.x = monitor_position.x != primary_monitor_position.x ? monitor_position.x : 0;
+	offset.y = monitor_position.y != primary_monitor_position.y ? monitor_position.y : 0;
+
+	istd_window_win32_set_position(window, (istd_vector2_i32){ (int32_t)((monitor_size.x - _window->size.x) / 2) + offset.x, (int32_t)((monitor_size.y - _window->size.y) / 2) + offset.y });
+
+	istd_monitor_win32_free(&primary_monitor, 1);
+}
+
+bool istd_window_win32_iconified(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->iconified;
+}
+
+bool istd_window_win32_maximized(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->maximized;
+}
+
+bool istd_window_win32_focused(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->focused;
+}
+
+void istd_window_win32_set_style(
+	_In_ istd_window_win32 window,
+	_In_ istd_window_style_flags style
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	if (_window->fullscreen == true)
+		return;
+
+	_window->style = GetWindowLongW(_window->hwnd, GWL_STYLE);
+
+	if (style & ISTD_WINDOW_STYLE_DEFUALT_BIT) {
+		_window->style = 0;
+		_window->style |= WS_OVERLAPPEDWINDOW;
+	}
+
+	if (style & ISTD_WINDOW_STYLE_RESIZABLE_BIT) {
+		_window->style |= WS_SIZEBOX;
+		_window->style |= WS_MAXIMIZEBOX;
+	}
+
+	if (style & ISTD_WINDOW_STYLE_NON_RESIZABLE_BIT) {
+		_window->style &= ~WS_SIZEBOX;
+		_window->style &= ~WS_MAXIMIZEBOX;
+	}
+
+	if (style & ISTD_WINDOW_STYLE_VISIBLE_BIT) 
+		istd_ignore_return(ShowWindow(_window->hwnd, SW_SHOW));
+	
+
+	if (style & ISTD_WINDOW_STYLE_NOT_VISIBLE_BIT)
+		istd_ignore_return(ShowWindow(_window->hwnd, SW_HIDE));
+
+	if (style & ISTD_WINDOW_STYLE_DECORATED_BIT) 
+		_window->style |= WS_OVERLAPPEDWINDOW;
+
+	if (style & ISTD_WINDOW_STYLE_NON_DECORATED_BIT) 
+		_window->style &= ~(WS_OVERLAPPEDWINDOW);
+
+	if (style & ISTD_WINDOW_STYLE_MAXIMIZE_BIT) 
+		istd_ignore_return(ShowWindow(_window->hwnd, SW_MAXIMIZE));
+
+	if (style & ISTD_WINDOW_STYLE_RESTORE_MAXIMIZE_BIT) 
+		istd_ignore_return(ShowWindow(_window->hwnd, SW_RESTORE));
+
+	istd_ignore_return(SetWindowLongW(_window->hwnd, GWL_STYLE, (LONG)_window->style));
+}
+
+void istd_window_win32_fullscreen(
+	_In_ istd_window_win32 window,
+	_In_ bool fullscreen,
+	_In_ istd_monitor_win32 monitor
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	if (_window->fullscreen == fullscreen)
+		return;
+
+	_window->fullscreen = fullscreen;
+
+	if (_window->fullscreen == false) {
+		istd_ignore_return(SetWindowLongPtrW(_window->hwnd, GWL_EXSTYLE, WS_EX_LEFT));
+		istd_ignore_return(SetWindowLongPtrW(_window->hwnd, GWL_STYLE, _window->style));
+		istd_window_win32_set_size(window, _window->old_size);
+		istd_window_win32_center(window, monitor);
+		return;
+	}
+
+	_window->old_size = _window->size;
+
+	istd_ignore_return(SetWindowLongPtrW(_window->hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST));
+	istd_ignore_return(SetWindowLongPtrW(_window->hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE));
+}
+
+bool istd_window_win32_mouse_entered(
+	_In_ istd_window_win32 window
+) {
+	return ((__istd_window_win32*)window)->mouse_entered;
+}
+
+uintptr_t istd_window_win32_hwnd(
+	_In_ istd_window_win32 window
+) {
+	return (uintptr_t)(((__istd_window_win32*)window)->hwnd);
+}
+
+uintptr_t istd_window_win32_hdc(
+	_In_ istd_window_win32 window
+) {
+	return (uintptr_t)(((__istd_window_win32*)window)->hdc);
+}
+
+uintptr_t istd_window_win32_hinstance(
+	_In_ istd_window_win32 window
+) {
+	return (uintptr_t)(((__istd_window_win32*)window)->hinstance);
+}
+
+void istd_window_win32_close(
+	_In_ istd_window_win32 window
+) {
+	((__istd_window_win32*)window)->running = false;
+}
+
 void istd_window_win32_free(
 	_Pre_valid_ _Post_invalid_ istd_window_win32 window
 ) {
@@ -558,26 +815,26 @@ void istd_window_win32_free(
 	_window->allocator.free(_window);
 }
 
-static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	__istd_window_win32* window = (__istd_window_win32*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
 
 	if (window == istd_nullptr)
-		return DefWindowProc(hwnd, msg, wparam, lparam);
+		return DefWindowProcW(hwnd, msg, wparam, lparam);
 
-	switch (msg)
-	{
+	switch (msg) {
 		case WM_CLOSE: {
 			window->running = false;
 			return 0;
 		}
 
-		case WM_NCCREATE:
+		case WM_NCCREATE: {
 			// If 0 is returned CreateWindowEx will return null.
 			// Istd window depends on this.
 			if (EnableNonClientDpiScaling(window->hwnd) == FALSE)
 				return 0;
 
 			break;
+		}
 		case WM_MOVE: {
 			window->position.x = (int32_t)GET_X_LPARAM(lparam);
 			window->position.y = (int32_t)GET_Y_LPARAM(lparam);
@@ -646,9 +903,7 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		case WM_KEYUP:
 		case WM_KEYDOWN: {
 			const bool down = (HIWORD(lparam) & KF_UP) ? false : true;
-			istd_key_modifier mods = __istd_window_win32_get_key_modifiers();
-			int32_t repeat = (HIWORD(lparam) & KF_REPEAT);
-			istd_unused_parameter(repeat);
+			istd_key_modifier_flags mods = __istd_window_win32_get_key_modifiers();
 			uint32_t scanCode = ((lparam & 0x00ff0000) >> 16);
 			// KF_EXTENDED broken wtf Win32!?
 			bool extented = (lparam & 0x01000000) != 0;
@@ -673,7 +928,7 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 			// Auto iconify if super key is pressed and window is fullscreen.
 			if ((key == ISTD_KEY_LSUPER || key == ISTD_KEY_RSUPER) && (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) /* && window->fullscreen */)
-				ShowWindow(window->hwnd, SW_MINIMIZE);
+				istd_ignore_return(ShowWindow(window->hwnd, SW_MINIMIZE));
 
 			window->callbacks.key((istd_window)window, key, mods, down);
 
@@ -731,7 +986,7 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		case WM_XBUTTONDOWN:
 		case WM_XBUTTONUP: {
 			istd_mouse_button button = 0;
-			istd_key_modifier mods = __istd_window_win32_get_key_modifiers();
+			istd_key_modifier_flags mods = __istd_window_win32_get_key_modifiers();
 			bool down = false;
 
 			if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP) button = ISTD_MOUSE_BUTTON_LEFT;
@@ -757,13 +1012,12 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			HDROP drop = (HDROP)wparam;
 			POINT mouse_pos = { 0 };
 
-			if (DragQueryPoint(drop, &mouse_pos) == FALSE)
-				break;
+			if (DragQueryPoint(drop, &mouse_pos) == TRUE) {
+				window->mouse_position.x = mouse_pos.x;
+				window->mouse_position.y = mouse_pos.y;
 
-			window->mouse_position.x = mouse_pos.x;
-			window->mouse_position.y = mouse_pos.y;
-
-			window->callbacks.mouse_move((istd_window)window, window->mouse_position);
+				window->callbacks.mouse_move((istd_window)window, window->mouse_position);
+			}
 
 			const uint32_t file_count = (uint32_t)DragQueryFileW(drop, (UINT)UINT32_MAX, istd_nullptr, 0);
 			wchar_t** paths = window->allocator.malloc(file_count * sizeof(wchar_t*));
@@ -772,15 +1026,16 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 				break;
 
 			for (uint32_t i = 0; i < file_count; i++) {
-				const uint32_t length = DragQueryFileW(drop, i, istd_nullptr, 0);
+				const uint32_t length = (uint32_t)DragQueryFileW(drop, i, istd_nullptr, 0);
 				// We set the size to length plus one since the length does not include the null terminator
 				paths[i] = window->allocator.malloc((length + 1) * sizeof(wchar_t));
 
 				if (paths[i] == istd_nullptr) {
-					window->allocator.free(paths);
 				
 					for (uint32_t y = 0; y < i; y++)
 						window->allocator.free(paths[y]);
+
+					window->allocator.free(paths);
 
 					break;
 				}
@@ -798,6 +1053,46 @@ static LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			DragFinish(drop);
 
 			return 0;
+		}
+
+		case WM_DPICHANGED: {
+			const RECT* suggested_size = (const RECT*)lparam;
+
+			window->position = (istd_vector2_i32){ (int32_t)suggested_size->left, (int32_t)suggested_size->top };
+			window->size = (istd_vector2_i32){ (int32_t)(suggested_size->right - suggested_size->left), (int32_t)(suggested_size->bottom - suggested_size->top) };
+
+			BOOL result = SetWindowPos(
+				window->hwnd,
+				istd_nullptr,
+				(int)window->position.x,
+				(int)window->position.y,
+				(int)window->size.x,
+				(int)window->size.y,
+				SWP_NOZORDER | SWP_SHOWWINDOW
+			);
+
+			if (result == FALSE)
+				break;
+
+			window->callbacks.dpi((istd_window)window, (istd_vector2_i32) { (int32_t)(LOWORD(wparam)), (int32_t)(HIWORD(wparam)) });
+
+			return 0;
+		}
+
+		case WM_GETDPISCALEDSIZE: {
+			RECT current_size = { 0 },
+				 scaled_size = { 0 };
+			SIZE* new_size = (SIZE*)lparam;
+			
+			if (AdjustWindowRectExForDpi(&current_size, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_APPWINDOW, GetDpiForWindow(window->hwnd)) == FALSE)
+				return 0;
+			if (AdjustWindowRectExForDpi(&scaled_size, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_APPWINDOW, (UINT)LOWORD(wparam)) == FALSE)
+				return 0;
+
+			new_size->cx += (scaled_size.right - scaled_size.left) - (current_size.right - current_size.left);
+			new_size->cy += (scaled_size.bottom - scaled_size.top) - (current_size.bottom - current_size.top);
+
+			return 1;
 		}
 
 	}

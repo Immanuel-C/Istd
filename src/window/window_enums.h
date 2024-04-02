@@ -6,8 +6,7 @@
 ISTD_EXTERN_C
 
 typedef enum {
-    // Numbers dont have virtual key codes
-    ISTD_KEY_0,
+    ISTD_KEY_0, 
     ISTD_KEY_1,
     ISTD_KEY_2,
     ISTD_KEY_3,
@@ -18,7 +17,6 @@ typedef enum {
     ISTD_KEY_8,
     ISTD_KEY_9,
 
-    // Alphabet dont have virtual key codes
     ISTD_KEY_A,
     ISTD_KEY_B,
     ISTD_KEY_C,
@@ -128,16 +126,18 @@ typedef enum {
 	ISTD_MOUSE_BUTTON_MAX
 } istd_mouse_button;
 
-typedef enum {
-	ISTD_KEY_MOD_NONE = 0x0,
-	ISTD_KEY_MOD_SHIFT = 0x1,
-	ISTD_KEY_MOD_CONTROL = 0x2,
-	ISTD_KEY_MOD_ALT = 0x4,
-	ISTD_KEY_MOD_SUPER = 0x8,
-	ISTD_KEY_MOD_CAPS_LOCK = 0x10,
-	ISTD_KEY_MOD_NUM_LOCK = 0x20,
-	ISTD_KEY_MOD_MAX = 7
-} istd_key_modifier;
+enum istd_key_modifier_bits {
+	ISTD_KEY_MOD_NONE_BIT = UINT64_C(0x0),
+	ISTD_KEY_MOD_SHIFT_BIT = UINT64_C(0x1),
+	ISTD_KEY_MOD_CONTROL_BIT = UINT64_C(0x2),
+	ISTD_KEY_MOD_ALT_BIT = UINT64_C(0x4),
+	ISTD_KEY_MOD_SUPER_BIT = UINT64_C(0x8),
+	ISTD_KEY_MOD_CAPS_LOCK_BIT = UINT64_C(0x10),
+	ISTD_KEY_MOD_NUM_LOCK_BIT = UINT64_C(0x20),
+	ISTD_KEY_MOD_MAX = UINT64_C(7)
+};
+
+typedef istd_flags istd_key_modifier_flags;
 
 typedef enum {
 	ISTD_CALLBACK_TYPE_WINDOW_SIZE,
@@ -154,10 +154,31 @@ typedef enum {
 	ISTD_CALLBACK_TYPE_KEY,
 	ISTD_CALLBACK_TYPE_CHAR,
 
+    ISTD_CALLBACK_TYPE_DPI,
+
     ISTD_CALLBACK_TYPE_PATH_DROP,
 
 	ISTD_CALLBACK_TYPE_MAX
 } istd_callback_type;
+
+enum istd_window_style_bits {
+    ISTD_WINDOW_STYLE_DEFUALT_BIT = UINT64_C(0x1),
+    ISTD_WINDOW_STYLE_RESIZABLE_BIT = UINT64_C(0x2),
+    ISTD_WINDOW_STYLE_NON_RESIZABLE_BIT = UINT64_C(0x4),
+    ISTD_WINDOW_STYLE_VISIBLE_BIT = UINT64_C(0x8),
+    ISTD_WINDOW_STYLE_NOT_VISIBLE_BIT = UINT64_C(0x10),
+    ISTD_WINDOW_STYLE_DECORATED_BIT = UINT64_C(0x20),
+    ISTD_WINDOW_STYLE_NON_DECORATED_BIT = UINT64_C(0x40),
+    ISTD_WINDOW_STYLE_MAXIMIZE_BIT = UINT64_C(0x80),
+    ISTD_WINDOW_STYLE_RESTORE_MAXIMIZE_BIT = UINT64_C(0x100),
+    ISTD_WINDOW_STYLE_MAX = UINT64_C(9)
+};
+
+typedef istd_flags istd_window_style_flags;
+
+istd_api const char* istd_stdcall istd_key_to_string(istd_key key);
+istd_api const char* istd_stdcall istd_mouse_button_to_string(istd_mouse_button key);
+istd_api const char* istd_stdcall istd_window_callback_to_string(istd_mouse_button key);
 
 ISTD_END_EXTERN_C
 

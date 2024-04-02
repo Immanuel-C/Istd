@@ -2,6 +2,8 @@
 
 #include "core.h"
 
+#include "istd_float.h"
+
 ISTD_EXTERN_C
 
 #include <stdint.h>
@@ -30,7 +32,7 @@ istd_api istd_timer istd_stdcall istd_timer_start(void);
 * @param unit the timer unit that the timer will return
 * @returns the time since the timer was started
 */
-istd_api double istd_stdcall istd_timer_now(
+istd_api istd_float64 istd_stdcall istd_timer_now(
 	_In_ istd_timer timer,
 	_In_ istd_time_units unit
 );
@@ -42,7 +44,7 @@ istd_api double istd_stdcall istd_timer_now(
 * @param unit the timer unit that the timer will return
 * @returns the timer since the timer was started
 */
-istd_api double istd_stdcall istd_timer_end(
+istd_api istd_float64 istd_stdcall istd_timer_end(
 	_Inout_ istd_timer timer,
 	_In_    istd_time_units unit
 );

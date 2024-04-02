@@ -2,12 +2,17 @@
 
 #include <stdlib.h>
 
+istd_pragma(warning(push))
+istd_pragma(warning(disable: 4232))
+
 static istd_allocator allocator = {
 	.malloc = malloc,
 	.calloc = calloc,
 	.realloc = realloc,
 	.free = free,
 };
+
+istd_pragma(warning(pop))
 
 istd_allocator* istd_get_defualt_allocator(void) {
 	return &allocator;
