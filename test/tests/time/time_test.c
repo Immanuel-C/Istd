@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 
-istd_test_msg istd_stdcall test_time(void) {
+istd_test_msg test_time(void) {
 	istd_test_msg msg = { 0 };
 
 	istd_timer timer = istd_timer_start();

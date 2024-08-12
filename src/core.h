@@ -15,7 +15,8 @@ ISTD_EXTERN_C
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "salieri.h"
+// #include "salieri.h"
+// #define WINVER 0x0605
 
 #define istd_define_handle(name) typedef struct name##_t* name
 
@@ -54,9 +55,14 @@ ISTD_EXTERN_C
 #define istd_stdcall __stdcall
 #define istd_fastcall __fastcall
 
-#define istd_disable_warning(code) __pragma(warning(suppress: code))
+// #define istd_disable_warning(code) __pragma(warning(suppress: code))
+#define istd_disable_warning(code) 
 
-#define istd_pragma(command) __pragma(command)
+// #define istd_pragma(command) __pragma(command)
+#define istd_pragma(command)
+
+#define istd_packed_struct istd_pragma(pack(push, 1))
+#define istd_packed_struct_end istd_pragma(pack(pop))
 
 #elif (defined(__MINGW32__) || defined(__GNUC__)) && !defined(__linux__)
 
@@ -68,6 +74,9 @@ ISTD_EXTERN_C
 
 #define istd_pragma(command) 
 
+#define istd_packed_struct __attribute__((__packed__))
+#define istd_packed_struct_end 
+
 #else
 
 #define istd_cdecl 
@@ -77,6 +86,9 @@ ISTD_EXTERN_C
 #define istd_disable_warning(code) 
 
 #define istd_pragma(command)
+
+#define istd_packed_struct __attribute__((__packed__))
+#define istd_packed_struct_end 
 
 #endif
 
@@ -158,10 +170,17 @@ typedef enum {
 	ISTD_RESULT_PARAMETER_NULL = 3,
 	ISTD_RESULT_PARAMETER_INVALID = 4,
 	ISTD_RESULT_ACCESS_OUT_OF_BOUNDS = 5,
+	ISTD_RESULT_FILE_COULD_NOT_OPEN = 6,
+	ISTD_RESULT_FILE_TOO_BIG = 7,
+	ISTD_RESULT_FORMAT_NOT_SUPPORTED = 8,
+	ISTD_RESULT_MEM_OP_FAILED = 9,
 } istd_result;
 
 typedef uint64_t istd_flags;
 
+#if !defined(_WCHAR_T_DEFINED)
+    typedef unsigned short wchar_t;
+#endif
 ISTD_END_EXTERN_C
 
 #endif

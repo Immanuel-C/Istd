@@ -1554,6 +1554,21 @@
 #  define SALIERI_DEFINED_String_length
 #endif
 
+#if !defined(_Pre_valid_) 
+#define _Pre_valid_
+#define SALIERI_DEFINED_Pre_valid
+#endif
+
+#if !defined(_Post_valid_) 
+#define _Post_valid_
+#define SALIERI_DEFINED_Post_valid
+#endif
+
+#if !defined(_Post_invalid_) 
+#define _Post_invalid_
+#define SALIERI_DEFINED_Post_invalid
+#endif
+
 #if defined(SALIERI_VERSION)
 #  undef SALIERI_VERSION
 #endif

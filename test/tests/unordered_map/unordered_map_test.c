@@ -19,7 +19,6 @@ size_t hash_function(const void* buf, size_t len) {
 	return hash;
 }
 
-
 istd_test_msg test_unordered_map(void) {
 	istd_test_msg msg = { 0 };
 

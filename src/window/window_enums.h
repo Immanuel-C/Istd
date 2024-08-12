@@ -176,9 +176,9 @@ enum istd_window_style_bits {
 
 typedef istd_flags istd_window_style_flags;
 
-istd_api const char* istd_stdcall istd_key_to_string(istd_key key);
-istd_api const char* istd_stdcall istd_mouse_button_to_string(istd_mouse_button key);
-istd_api const char* istd_stdcall istd_window_callback_to_string(istd_mouse_button key);
+istd_api const char* istd_key_to_string(istd_key key);
+istd_api const char* istd_mouse_button_to_string(istd_mouse_button key);
+istd_api const char* istd_window_callback_to_string(istd_mouse_button key);
 
 ISTD_END_EXTERN_C
 

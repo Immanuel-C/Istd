@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 void istd_test(
-	_In_   istd_pfn_test test_fun,
-	_In_z_ const char* test_name
+	istd_pfn_test test_fun,
+	const char* test_name
 ) {
 
 	printf("%s Testing: %s %s\n", ISTD_TEST_DIVIDER, test_name, ISTD_TEST_DIVIDER);

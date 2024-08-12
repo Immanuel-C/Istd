@@ -13,10 +13,10 @@ istd_define_handle(istd_dynamic_array);
 /**
 * @brief Use macro istd_dynamic_array_create.
 */
-istd_api istd_dynamic_array istd_stdcall __istd_dynamic_array_create( 
-		_In_	 size_t typeSize, 
-		_In_	 size_t length,
-		_In_opt_ istd_allocator* allocator 
+istd_api istd_dynamic_array __istd_dynamic_array_create( 
+		size_t typeSize, 
+		size_t length,
+		istd_allocator* allocator 
 	);
 /**
 * @brief Creates a dynamic array.
@@ -29,9 +29,9 @@ istd_api istd_dynamic_array istd_stdcall __istd_dynamic_array_create(
 /**
 * Use macro _istd_dynamic_array_at.
 */
-istd_api void* istd_stdcall __istd_dynamic_array_at( 
-		_In_ istd_dynamic_array arr, 
-		_In_ size_t index
+istd_api void* __istd_dynamic_array_at( 
+		istd_dynamic_array arr, 
+		size_t index
 	);
 /**
 * @brief Gets data in dynamic array at index.
@@ -46,38 +46,38 @@ istd_api void* istd_stdcall __istd_dynamic_array_at(
 * @param arr the arr to push back.
 * @param val the value to store.
 */
-istd_api void istd_stdcall istd_dynamic_array_push_back( 
-		_Inout_ istd_dynamic_array arr, 
-		_In_ void* val
+istd_api void istd_dynamic_array_push_back( 
+		istd_dynamic_array arr, 
+		void* val
 	);
 /**
 * @brief Remove the value to the end of the array.
 * @param arr the arr to pop back.
 */
-istd_api void istd_stdcall istd_dynamic_array_pop_back( 
-		_Inout_ istd_dynamic_array arr
+istd_api void istd_dynamic_array_pop_back( 
+		istd_dynamic_array arr
 	);
 /**
 * @brief Gets the length of the array.
 * @param arr array to get the length of.
 * @returns A size_t of the length of the array.
 */
-istd_api size_t istd_stdcall istd_dynamic_array_length( 
-		_In_ istd_dynamic_array arr
+istd_api size_t istd_dynamic_array_length( 
+		istd_dynamic_array arr
 	);
 /**
 * @brief Gets the capacity of the array.
 * @param arr array to get the capacity of.
 * @returns A size_t of the capacity of the array.
 */
-istd_api size_t istd_stdcall istd_dynamic_array_capacity( 
-		_In_ istd_dynamic_array arr
+istd_api size_t istd_dynamic_array_capacity( 
+		istd_dynamic_array arr
 	);
 /**
 * Use macro istd_dynamic_array_buffer.
 */
-istd_api void* istd_stdcall __istd_dynamic_array_buffer(
-		_In_ istd_dynamic_array arr
+istd_api void* __istd_dynamic_array_buffer(
+		istd_dynamic_array arr
 	);
 /**
 * @brief Gets the raw data buffer of the array.
@@ -89,24 +89,24 @@ istd_api void* istd_stdcall __istd_dynamic_array_buffer(
 * @brief Make array capacity fit to the length.
 * @param arr the array to shrink
 */
-istd_api void istd_stdcall istd_dynamic_array_shrink_to_fit( 
-		_Inout_ istd_dynamic_array arr
+istd_api void istd_dynamic_array_shrink_to_fit( 
+		istd_dynamic_array arr
 	);
 /**
 * @brief Resize the array.
 * @param arr the array to resize.
 * @param new_length the new length of the array.
 */
-istd_api void istd_stdcall istd_dynamic_array_resize( 
-		_Inout_ istd_dynamic_array arr, 
-		_In_ size_t new_length 
+istd_api void istd_dynamic_array_resize( 
+		istd_dynamic_array arr, 
+		size_t new_length 
 	);
 /**
 * @brief Free dynamic array and set the pointer to istd_nullptr.
 * @param arr array to free.
 */
-istd_api void istd_stdcall istd_dynamic_array_free(
-		_Pre_valid_ _Post_valid_ istd_dynamic_array arr
+istd_api void istd_dynamic_array_free(
+		istd_dynamic_array arr
 	);
 
 ISTD_END_EXTERN_C

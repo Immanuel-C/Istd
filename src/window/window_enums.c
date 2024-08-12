@@ -2,14 +2,15 @@
 
 const char* istd_key_to_string(istd_key key) {
 	istd_unused_parameter(key);
+	return istd_nullptr;
 }
 
 const char* istd_mouse_button_to_string(istd_mouse_button key) {
 	istd_unused_parameter(key);
-
+	return istd_nullptr;
 }
 
 const char* istd_window_callback_to_string(istd_mouse_button key) {
 	istd_unused_parameter(key);
-
+	return istd_nullptr;
 }

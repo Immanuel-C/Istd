@@ -5,10 +5,10 @@
 
 ISTD_EXTERN_C
 
-istd_api istd_allocator* istd_stdcall istd_get_defualt_allocator(void);
+istd_api istd_allocator* istd_get_defualt_allocator(void);
 
-istd_api void istd_stdcall istd_set_defualt_allocator(
-	_In_ istd_allocator* new_allocator
+istd_api void istd_set_defualt_allocator(
+	istd_allocator* new_allocator
 );
 
 ISTD_END_EXTERN_C

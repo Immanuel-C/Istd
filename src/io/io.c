@@ -7,8 +7,8 @@
 #include <safe/string_safe.h>
 
 void istd_println(
-	_In_z_ const char* fmt,
-	_In_ ...
+	const char* fmt,
+    ...
 ) {
 	va_list list = istd_nullptr;
 
@@ -20,9 +20,9 @@ void istd_println(
 }
 
 void istd_fprintln(
-	_In_ FILE* stream,
-	_In_z_ const char* fmt,
-	_In_ ...
+	FILE* stream,
+	const char* fmt,
+	...
 ) {
 	va_list list = istd_nullptr;
 
@@ -34,16 +34,16 @@ void istd_fprintln(
 }
 
 void istd_vprintln(
-	_In_z_ const char* fmt,
-	_In_ va_list list
+	const char* fmt,
+	va_list list
 ) {
 	istd_vfprintln(stdout, fmt, list);
 }
 
 void istd_vfprintln(
-	_In_ FILE* stream,
-	_In_z_ const char* fmt,
-	_In_ va_list list
+	FILE* stream,
+	const char* fmt,
+	va_list list
 ) {
 	// Add two for null terminator and new line characters
 	size_t fmt_with_new_line_size = strlen(fmt) + 2;
@@ -62,8 +62,8 @@ void istd_vfprintln(
 	free(fmt_with_new_line);
 }
 
-istd_api void istd_stdcall istd_putln(
-	_In_z_ const char* str
+istd_api void istd_putln(
+	const char* str
 ) {
 	// Add two for null terminator and new line characters
 	size_t str_with_new_line_size = strlen(str) + 2;

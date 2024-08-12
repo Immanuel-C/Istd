@@ -6,8 +6,10 @@
 
 #endif
 
+#include <stdint.h>
+
 istd_monitor istd_monitor_primary(
-	_In_opt_ istd_allocator* allocator
+	istd_allocator* allocator
 ) {
 	#if defined(_WIN32)
 
@@ -25,8 +27,8 @@ size_t istd_monitor_count(void) {
 }
 
 istd_monitor* istd_monitor_all(
-	_In_	 size_t* monitor_count,
-	_In_opt_ istd_allocator* allocator
+	size_t* monitor_count,
+	istd_allocator* allocator
 ) {
 	#if defined(_WIN32)
 
@@ -36,7 +38,7 @@ istd_monitor* istd_monitor_all(
 }
 
 const wchar_t* istd_monitor_name(
-	_In_ istd_monitor monitor
+	istd_monitor monitor
 ) {
 	#if defined(_WIN32)
 
@@ -46,7 +48,7 @@ const wchar_t* istd_monitor_name(
 }
 
 istd_vector2_i32 istd_monitor_size(
-	_In_ istd_monitor monitor
+	istd_monitor monitor
 ) {
 	#if defined(_WIN32)
 
@@ -56,7 +58,7 @@ istd_vector2_i32 istd_monitor_size(
 }
 
 istd_vector2_i32 istd_monitor_position(
-	_In_ istd_monitor monitor
+	istd_monitor monitor
 ) {
 	#if defined(_WIN32)
 
@@ -66,7 +68,7 @@ istd_vector2_i32 istd_monitor_position(
 }
 
 istd_vector2_i32 istd_monitor_dpi(
-	_In_ istd_monitor monitor
+	istd_monitor monitor
 ) {
 	#if defined(_WIN32)
 
@@ -76,8 +78,8 @@ istd_vector2_i32 istd_monitor_dpi(
 }
 
 void istd_monitor_free(
-	_In_ istd_monitor* monitors,
-	_In_ size_t monitors_count
+	istd_monitor* monitors,
+	size_t monitors_count
 ) {
 	#if defined(_WIN32)
 

@@ -24,8 +24,8 @@ istd_timer istd_timer_start(void) {
 }
 
 istd_float64 istd_timer_now(
-	_In_ istd_timer timer,
-	_In_ istd_time_units unit
+	istd_timer timer,
+	istd_time_units unit
 ) { 
 	__istd_timer* _timer = (__istd_timer*)timer;
 	clock_t end = clock();
@@ -52,8 +52,8 @@ istd_float64 istd_timer_now(
 }
 
 istd_float64 istd_timer_end(
-	_Inout_ istd_timer timer,
-	_In_    istd_time_units unit
+	istd_timer timer,
+	istd_time_units unit
 ) {
 	double delta = istd_timer_now(timer, unit);
 	free((__istd_timer*)timer);

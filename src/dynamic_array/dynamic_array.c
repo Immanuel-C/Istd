@@ -11,9 +11,9 @@ typedef struct {
 } __istd_dynamic_array;
 
 istd_dynamic_array __istd_dynamic_array_create(
-	_In_	 size_t typeSize, 
-	_In_	 size_t length, 
-	_In_opt_ istd_allocator* allocator
+	size_t typeSize, 
+	size_t length, 
+	istd_allocator* allocator
 ) {
 	istd_allocator* alloc = allocator;
 
@@ -30,8 +30,8 @@ istd_dynamic_array __istd_dynamic_array_create(
 }
 
 void* __istd_dynamic_array_at(
-	_In_ istd_dynamic_array arr, 
-	_In_ size_t index
+	istd_dynamic_array arr, 
+	size_t index
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
 
@@ -43,8 +43,8 @@ void* __istd_dynamic_array_at(
 }
 
 void istd_dynamic_array_push_back(
-	_Inout_ istd_dynamic_array arr, 
-	_In_ void* val 
+	istd_dynamic_array arr, 
+	void* val 
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
 
@@ -58,7 +58,7 @@ void istd_dynamic_array_push_back(
 }
 
 void istd_dynamic_array_pop_back(
-	_Inout_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
 	istd_assert(dynamic_arr->length != 0, "istd_dynamic_array_pop_back() failed. Trying to pop back an empty array.");
@@ -66,25 +66,25 @@ void istd_dynamic_array_pop_back(
 }
 
 size_t istd_dynamic_array_length(
-	_In_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	return ((__istd_dynamic_array*)(arr))->length;
 }
 
 size_t istd_dynamic_array_capacity(
-	_In_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	return ((__istd_dynamic_array*)(arr))->capacity;
 }
 
 void* __istd_dynamic_array_buffer(
-	_In_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	return ((__istd_dynamic_array*)(arr))->buf;
 }
 
 void istd_dynamic_array_shrink_to_fit(
-	_Inout_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
 	istd_assert(dynamic_arr->length < dynamic_arr->capacity, "istd_dynamic_array_shrink_to_fit() failed. The dynamic array length must be smaller than the capacity.");
@@ -93,8 +93,8 @@ void istd_dynamic_array_shrink_to_fit(
 }
 
 void istd_dynamic_array_resize(
-	_Inout_ istd_dynamic_array arr, 
-	_In_ size_t new_length
+	istd_dynamic_array arr, 
+	size_t new_length
 ) {
 	istd_assert(new_length != 0, "istd_dynamic_array_resize() failed. Given size must be greater than 0.");
 
@@ -107,7 +107,7 @@ void istd_dynamic_array_resize(
 }
 
 void istd_dynamic_array_free(
-	_Pre_valid_ _Post_valid_ istd_dynamic_array arr
+	istd_dynamic_array arr
 ) {
 	__istd_dynamic_array* dynamic_array = (__istd_dynamic_array*)arr;
 

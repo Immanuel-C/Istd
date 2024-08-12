@@ -1,11 +1,11 @@
 #include "window_win32.h"
 
-#define WIN32_LEAN_AND_MEAN
+// #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <windowsx.h>
+#include <WindowsX.h>
 #include <shellapi.h>
+#include <WinUser.h>
 
-#include <stdio.h>
 #include "allocator/allocator.h"
 #include "math/vector.h"
 
@@ -54,7 +54,7 @@ typedef struct {
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-static istd_key_modifier_flags istd_stdcall __istd_window_win32_get_key_modifiers(void) {
+static istd_key_modifier_flags __istd_window_win32_get_key_modifiers(void) {
 	istd_key_modifier_flags mods = ISTD_KEY_MOD_NONE_BIT;
 
 	if (GetKeyState(VK_SHIFT) & 0x8000)
@@ -73,13 +73,13 @@ static istd_key_modifier_flags istd_stdcall __istd_window_win32_get_key_modifier
 	return mods;
 }
 
-_Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win32 istd_window_win32_create(
-	_In_z_   const wchar_t* title,
-	_In_	 int32_t width,
-	_In_	 int32_t height,
-	_In_	 int32_t x,
-	_In_	 int32_t y,
-	_In_opt_ istd_allocator* allocator
+istd_window_win32 istd_window_win32_create(
+	const wchar_t* title,
+	int32_t width,
+	int32_t height,
+	int32_t x,
+	int32_t y,
+	istd_allocator* allocator
 ) {
 	istd_allocator* alloc = allocator;
 
@@ -128,8 +128,8 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 
 	window->hinstance = (HINSTANCE)GetModuleHandleW(istd_nullptr);
 
-	window->hcursor = LoadCursorW(window->hinstance, IDC_ARROW);
-	window->hicon = LoadIconW(window->hinstance, IDI_APPLICATION);
+	window->hcursor = LoadCursorW(window->hinstance, (void*)IDC_ARROW);
+	window->hicon = LoadIconW(window->hinstance, (void*)IDI_APPLICATION);
 
 	window->style = WS_OVERLAPPEDWINDOW;
 
@@ -189,14 +189,14 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window_win
 	return (istd_window_win32)window;
 }
 
-_Check_return_ bool istd_window_win32_running(
-	_In_ istd_window_win32 window
+bool istd_window_win32_running(
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->running;
 }
 
-void istd_stdcall istd_window_win32_update(
-	_In_ istd_window_win32 window
+void istd_window_win32_update(
+	istd_window_win32 window
 ) {
 	MSG msg = { 0 };
 
@@ -209,16 +209,16 @@ void istd_stdcall istd_window_win32_update(
 }
 
 void istd_window_win32_wait_event(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	istd_ignore_return(WaitMessage());
 	istd_window_win32_update(window);
 }
 
-_Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_win32_set_callback(
-	_Inout_ istd_window_win32 window,
-	_In_    void* callback_fun,
-	_In_    int callback_type
+void* istd_window_win32_set_callback(
+	istd_window_win32 window,
+	void* callback_fun,
+	int callback_type
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -298,14 +298,14 @@ _Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_win32_set_ca
 }
 
 const wchar_t* istd_window_win32_title(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->title;
 }
 
 void istd_window_win32_set_title(
-	_In_   istd_window_win32 window,
-	_In_z_ const wchar_t* new_title
+	istd_window_win32 window,
+	const wchar_t* new_title
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -322,20 +322,20 @@ void istd_window_win32_set_title(
 }
 
 istd_vector2_i32 istd_window_win32_size(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->size;
 }
 
-istd_api istd_vector2_i32 istd_stdcall istd_window_win32_framebuffer_size(
-	_In_ istd_window_win32 window
+istd_api istd_vector2_i32 istd_window_win32_framebuffer_size(
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->framebuffer_size;
 }
 
 void istd_window_win32_set_size(
-	_In_ istd_window_win32 window,
-	_In_ istd_vector2_i32 new_size
+	istd_window_win32 window,
+	istd_vector2_i32 new_size
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 	_window->size = new_size;
@@ -352,14 +352,14 @@ void istd_window_win32_set_size(
 }
 
 istd_vector2_i32 istd_window_win32_position(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->position;
 }
 
 void istd_window_win32_set_position(
-	_In_ istd_window_win32 window,
-	_In_ const istd_vector2_i32 new_position
+	istd_window_win32 window,
+	const istd_vector2_i32 new_position
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 	_window->position = new_position;
@@ -376,20 +376,20 @@ void istd_window_win32_set_position(
 }
 
 istd_vector2_f32 istd_window_win32_mouse_scroll_offset(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->scroll_offset;
 }
 
 istd_vector2_i32 istd_window_win32_mouse_position(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->mouse_position;
 }
 
 void istd_window_win32_set_mouse_position(
-	_In_ istd_window_win32 window,
-	_In_ istd_vector2_i32 new_mouse_position
+	istd_window_win32 window,
+	istd_vector2_i32 new_mouse_position
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -407,24 +407,24 @@ void istd_window_win32_set_mouse_position(
 }
 
 bool istd_window_win32_mouse_button_down(
-	_In_ istd_window_win32 window,
-	_In_ istd_mouse_button button,
-	_In_ istd_key_modifier_flags mods
+	istd_window_win32 window,
+	istd_mouse_button button,
+	istd_key_modifier_flags mods
 ) {
 	return (((__istd_window_win32*)window)->mouse_buttons[(size_t)button] == true) && ((__istd_window_win32_get_key_modifiers() & mods) == mods);
 }
 
 
 bool istd_window_win32_key_down(
-	_In_ istd_window_win32 window,
-	_In_ istd_key key,
-	_In_ istd_key_modifier_flags mods
+	istd_window_win32 window,
+	istd_key key,
+	istd_key_modifier_flags mods
 ) {
 	return (((__istd_window_win32*)window)->keys[(size_t)key] == true) && ((__istd_window_win32_get_key_modifiers() & mods) == mods);
 }
 
 istd_key istd_window_win32_convert_vk_key_code_to_istd_key(
-	_In_ int32_t vk_key_code
+	int32_t vk_key_code
 ) {
     switch (vk_key_code)
     {
@@ -638,28 +638,28 @@ istd_key istd_window_win32_convert_vk_key_code_to_istd_key(
     }
 }
 
-void  istd_window_win32_set_user_ptr(
-	_In_ istd_window_win32 window,
-	_In_ void* ptr
+void istd_window_win32_set_user_ptr(
+	istd_window_win32 window,
+	void* ptr
 ) {
 	((__istd_window_win32*)window)->user_ptr = ptr;
 }
 
-_Ret_maybenull_ void* istd_window_win32_get_user_ptr(
-	_In_ istd_window_win32 window
+void* istd_window_win32_get_user_ptr(
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->user_ptr;
 }
 
 istd_float64 istd_window_win32_get_time_ms(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((istd_float64)(clock() - ((__istd_window_win32*)window)->time_created) / CLOCKS_PER_SEC) * 1000;
 }
 
 void istd_window_win32_center(
-	_In_ istd_window_win32 window,
-	_In_ istd_monitor_win32 monitor
+	istd_window_win32 window,
+	istd_monitor_win32 monitor
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -676,32 +676,32 @@ void istd_window_win32_center(
 	offset.x = monitor_position.x != primary_monitor_position.x ? monitor_position.x : 0;
 	offset.y = monitor_position.y != primary_monitor_position.y ? monitor_position.y : 0;
 
-	istd_window_win32_set_position(window, (istd_vector2_i32){ (int32_t)((monitor_size.x - _window->size.x) / 2) + offset.x, (int32_t)((monitor_size.y - _window->size.y) / 2) + offset.y });
+	istd_window_win32_set_position(window, (istd_vector2_i32){ {(int32_t)((monitor_size.x - _window->size.x) / 2) + offset.x}, {(int32_t)((monitor_size.y - _window->size.y) / 2) + offset.y} });
 
 	istd_monitor_win32_free(&primary_monitor, 1);
 }
 
 bool istd_window_win32_iconified(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->iconified;
 }
 
 bool istd_window_win32_maximized(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->maximized;
 }
 
 bool istd_window_win32_focused(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->focused;
 }
 
 void istd_window_win32_set_style(
-	_In_ istd_window_win32 window,
-	_In_ istd_window_style_flags style
+	istd_window_win32 window,
+	istd_window_style_flags style
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -728,7 +728,6 @@ void istd_window_win32_set_style(
 	if (style & ISTD_WINDOW_STYLE_VISIBLE_BIT) 
 		istd_ignore_return(ShowWindow(_window->hwnd, SW_SHOW));
 	
-
 	if (style & ISTD_WINDOW_STYLE_NOT_VISIBLE_BIT)
 		istd_ignore_return(ShowWindow(_window->hwnd, SW_HIDE));
 
@@ -748,9 +747,9 @@ void istd_window_win32_set_style(
 }
 
 void istd_window_win32_fullscreen(
-	_In_ istd_window_win32 window,
-	_In_ bool fullscreen,
-	_In_ istd_monitor_win32 monitor
+	istd_window_win32 window,
+	bool fullscreen,
+	istd_monitor_win32 monitor
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -774,37 +773,108 @@ void istd_window_win32_fullscreen(
 }
 
 bool istd_window_win32_mouse_entered(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return ((__istd_window_win32*)window)->mouse_entered;
 }
 
+uintptr_t istd_stdcall __istd_create_win32_create_image_handle(
+	__istd_window_win32* window,
+	istd_image* image, 
+	uint32_t hot_x,
+	uint32_t hot_y,
+	bool is_icon
+) {
+	BITMAPV5HEADER bitmap_header = { 0 };
+	bitmap_header.bV5Size = sizeof(BITMAPV5HEADER);
+	bitmap_header.bV5Width = (LONG)image->width;
+	bitmap_header.bV5Height = (LONG)image->height;
+	bitmap_header.bV5Planes = 1;
+	bitmap_header.bV5BitCount = 24;
+	bitmap_header.bV5Compression = BI_RGB;
+	bitmap_header.bV5RedMask = 0x00ff0000;
+	bitmap_header.bV5GreenMask = 0x0000ff00;
+	bitmap_header.bV5BlueMask = 0x000000ff;
+	bitmap_header.bV5AlphaMask = 0;
+
+	uint8_t* target = istd_nullptr;
+
+	HBITMAP colour = CreateDIBSection(
+		window->hdc, 
+		(BITMAPINFO*)&bitmap_header, 
+		DIB_RGB_COLORS, 
+		(void**)&target, 
+		istd_nullptr, 
+		0
+	);
+
+	HBITMAP mask = CreateBitmap((int)image->width, (int)image->height, 1, 1, istd_nullptr);
+
+	uint8_t* source = image->data;
+	for (size_t i = 0; i < image->width * image->height; i++) {
+		target[2] = source[0];
+		target[1] = source[1];
+		target[0] = source[2];
+		target += 3;
+		source += 3;
+	}
+
+	ICONINFO icon_info = { 0 };
+	icon_info.fIcon = (BOOL)is_icon;
+	icon_info.xHotspot = hot_x;
+	icon_info.yHotspot = hot_y;
+	icon_info.hbmMask = mask;
+	icon_info.hbmColor = colour;
+
+	HANDLE image_handle = (HANDLE)CreateIconIndirect(&icon_info);
+
+	if (colour != istd_nullptr)
+		istd_ignore_return(DeleteObject(colour));
+	if (mask != istd_nullptr)
+		istd_ignore_return(DeleteObject(mask));
+
+	return (uintptr_t)image_handle;
+}
+
+
+void istd_window_win32_set_icon(
+	istd_window_win32 window,
+	istd_image* image
+) {
+	__istd_window_win32* _window = (__istd_window_win32*)window;
+
+	HICON icon = (HICON)__istd_create_win32_create_image_handle(_window, image, 0, 0, true);
+
+	istd_ignore_return(SendMessageW(_window->hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon));
+	istd_ignore_return(SendMessageW(_window->hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon));
+}
+
 uintptr_t istd_window_win32_hwnd(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return (uintptr_t)(((__istd_window_win32*)window)->hwnd);
 }
 
 uintptr_t istd_window_win32_hdc(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return (uintptr_t)(((__istd_window_win32*)window)->hdc);
 }
 
 uintptr_t istd_window_win32_hinstance(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	return (uintptr_t)(((__istd_window_win32*)window)->hinstance);
 }
 
 void istd_window_win32_close(
-	_In_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	((__istd_window_win32*)window)->running = false;
 }
 
 void istd_window_win32_free(
-	_Pre_valid_ _Post_invalid_ istd_window_win32 window
+	istd_window_win32 window
 ) {
 	__istd_window_win32* _window = (__istd_window_win32*)window;
 
@@ -921,7 +991,8 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				}
 			}
 
-			// Unsupported Key
+			// If a key is not supported istd_window_win32_convert_vk_key_code_to_istd_key will return ISTD_KEY_MAX and this will break and return without
+            // setting window->keys or calling the callback
 			if (key == ISTD_KEY_MAX) break;
 
 			window->keys[(size_t)key] = down;
@@ -936,7 +1007,8 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		}
 
 		case WM_SYSCOMMAND: {
-			// Check if alt/alt + something was pressed usually this is a system command that is reserved to focus the menu but we want control over alt so we override it.
+            // Check if alt/alt + something was pressed usually this is a system command that is 
+            // reserved to focus the menu but we want control over alt so we override it.
 			if (wparam == SC_KEYMENU && HIWORD(lparam) <= 0)
 				return 0;
 
@@ -1058,8 +1130,8 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		case WM_DPICHANGED: {
 			const RECT* suggested_size = (const RECT*)lparam;
 
-			window->position = (istd_vector2_i32){ (int32_t)suggested_size->left, (int32_t)suggested_size->top };
-			window->size = (istd_vector2_i32){ (int32_t)(suggested_size->right - suggested_size->left), (int32_t)(suggested_size->bottom - suggested_size->top) };
+			window->position = (istd_vector2_i32){ {(int32_t)suggested_size->left}, {(int32_t)suggested_size->top} };
+			window->size = (istd_vector2_i32){ {(int32_t)(suggested_size->right - suggested_size->left)}, {(int32_t)(suggested_size->bottom - suggested_size->top)} };
 
 			BOOL result = SetWindowPos(
 				window->hwnd,
@@ -1074,7 +1146,7 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			if (result == FALSE)
 				break;
 
-			window->callbacks.dpi((istd_window)window, (istd_vector2_i32) { (int32_t)(LOWORD(wparam)), (int32_t)(HIWORD(wparam)) });
+			window->callbacks.dpi((istd_window)window, (istd_vector2_i32) { {(int32_t)(LOWORD(wparam))}, {(int32_t)(HIWORD(wparam))} });
 
 			return 0;
 		}

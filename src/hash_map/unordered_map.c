@@ -3,6 +3,8 @@
 #include "safe/string_safe.h"
 #include "allocator/allocator.h"
 
+#include <string.h>
+
 typedef struct __istd_unordered_map_item_t {
 	void* key;
 	size_t key_size;
@@ -18,11 +20,11 @@ typedef struct {
 	istd_allocator allocator;
 } _istd_unordered_map;
 
-_Check_return_ _Ret_maybenull_ _Success_(return != istd_nullptr) istd_unordered_map __istd_unordered_map_create(
-	_In_ const size_t type_size,
-	_In_ const size_t capacity,
-	_In_ istd_pfn_hash_function hash_function,
-	_In_opt_ istd_allocator* allocator
+istd_unordered_map __istd_unordered_map_create(
+	const size_t type_size,
+	const size_t capacity,
+	istd_pfn_hash_function hash_function,
+	istd_allocator* allocator
 ) {
 	istd_allocator* alloc = allocator;
 
@@ -53,20 +55,20 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullptr) istd_unordered_
 	return (istd_unordered_map)map;
 }
 
-static istd_force_inline void istd_stdcall __istd_free_item(
-	_In_ _istd_unordered_map* map,
-	_Pre_valid_ _Post_invalid_ __istd_unordered_map_item* item
+static istd_force_inline void __istd_free_item(
+	_istd_unordered_map* map,
+	__istd_unordered_map_item* item
 ) {
 	map->allocator.free(item->key);
 	map->allocator.free(item->value);
 	map->allocator.free(item);
 }
 
-static __istd_unordered_map_item* istd_stdcall __istd_create_item(
-	_Inout_ _istd_unordered_map* map,
-	_In_ const void* key,
-	_In_ size_t key_size,
-	_In_ const void* value
+static __istd_unordered_map_item* __istd_create_item(
+	_istd_unordered_map* map,
+	const void* key,
+	size_t key_size,
+	const void* value
 ) {
 	__istd_unordered_map_item* item = map->allocator.malloc(sizeof(__istd_unordered_map_item));
 
@@ -100,11 +102,11 @@ static __istd_unordered_map_item* istd_stdcall __istd_create_item(
 	return item;
 }
 
-_Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_insert(
-	_Inout_ istd_unordered_map map,
-	_In_ const void* key,
-	_In_ size_t key_size,
-	_In_ const void* value
+istd_result istd_unordered_map_insert(
+	istd_unordered_map map,
+	const void* key,
+	size_t key_size,
+	const void* value
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
 	
@@ -127,10 +129,10 @@ _Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_insert(
 	return ISTD_RESULT_SUCCESS;
 }
 
-_Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_erase(
-	_Inout_ istd_unordered_map map,
-	_In_	const void* key,
-	_In_	size_t key_size
+istd_result istd_unordered_map_erase(
+	istd_unordered_map map,
+	const void* key,
+	size_t key_size
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
 
@@ -164,10 +166,10 @@ _Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_erase(
 	return ISTD_RESULT_NOT_FOUND;
 }
 
-_Check_return_ _Ret_maybenull_ _Success_(return != istd_nullptr) void* __istd_unordered_map_search(
-	_In_ istd_unordered_map map,
-	_In_ const void* key,
-	_In_ const size_t key_size
+void* __istd_unordered_map_search(
+	istd_unordered_map map,
+	const void* key,
+	const size_t key_size
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
 
@@ -194,14 +196,14 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullptr) void* __istd_un
 	return istd_nullptr;
 }
 
-_Check_return_ size_t istd_unordered_map_capacity(
-	_In_ istd_unordered_map map
+size_t istd_unordered_map_capacity(
+	istd_unordered_map map
 ) {
 	return ((_istd_unordered_map*)map)->capacity;
 }
 
-_Check_return_ _Success_(return == ISTD_RESULT_SUCCESS) istd_result istd_unordered_map_free(
-	_Pre_valid_ _Post_invalid_ istd_unordered_map map
+istd_result istd_unordered_map_free(
+	istd_unordered_map map
 ) {
 	_istd_unordered_map* _map = (_istd_unordered_map*)map;
 	

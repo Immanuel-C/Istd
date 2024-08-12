@@ -5,7 +5,7 @@
 
 ISTD_EXTERN_C
 
-istd_test_msg istd_stdcall test_time(void);
+istd_test_msg test_time(void);
 
 ISTD_END_EXTERN_C
 

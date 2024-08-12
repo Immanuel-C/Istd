@@ -14,7 +14,6 @@
 #endif
 
 uint64_t istd_high_resolution_now_ns(void) {
-
 	#if defined(_WIN32)
 	LARGE_INTEGER counter, freq;
 
@@ -35,5 +34,4 @@ uint64_t istd_high_resolution_now_ns(void) {
 	// clock_gettime
 
 	#endif
-
 }

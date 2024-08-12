@@ -23,7 +23,7 @@ void test_vfprintln(FILE* stream, const char* fmt, ...) {
 	va_end(list);
 }
 
-istd_test_msg istd_stdcall test_io(void) {
+istd_test_msg test_io(void) {
 	istd_test_msg msg = { 0 };
 
 	istd_println("Test println -> %d", 124124532);

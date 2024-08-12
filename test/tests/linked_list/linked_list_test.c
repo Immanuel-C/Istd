@@ -18,7 +18,7 @@ static void* print_singly_linked_list_ints(istd_node head) {
 }
 
 
-istd_test_msg istd_stdcall test_linked_list(void) {
+istd_test_msg test_linked_list(void) {
 	istd_test_msg msg = { 0 };
 
 	int i = 10;

@@ -12,90 +12,90 @@ ISTD_EXTERN_C
 
 istd_define_handle(istd_window);
 
-typedef void (istd_stdcall* istd_pfn_window_size_callback)(istd_window, istd_vector2_i32);
-typedef void (istd_stdcall* istd_pfn_iconified_callback)(istd_window, bool);
+typedef void (* istd_pfn_window_size_callback)(istd_window, istd_vector2_i32);
+typedef void (* istd_pfn_iconified_callback)(istd_window, bool);
 typedef istd_pfn_window_size_callback istd_pfn_framebuffer_size_callback;
 typedef istd_pfn_window_size_callback istd_pfn_window_move_callback;
 typedef istd_pfn_iconified_callback istd_pfn_maximized_callback;
 
 typedef istd_pfn_window_size_callback istd_pfn_mouse_move_callback;
-typedef void (istd_stdcall* istd_pfn_mouse_scroll_callback)(istd_window, istd_vector2_f32);
-typedef void (istd_stdcall* istd_pfn_mouse_button_callback)(istd_window, istd_mouse_button, istd_key_modifier_flags, bool);
+typedef void (* istd_pfn_mouse_scroll_callback)(istd_window, istd_vector2_f32);
+typedef void (* istd_pfn_mouse_button_callback)(istd_window, istd_mouse_button, istd_key_modifier_flags, bool);
 typedef istd_pfn_iconified_callback istd_pfn_mouse_entered_callback;
 
-typedef void (istd_stdcall* istd_pfn_key_callback)(istd_window, istd_key, istd_key_modifier_flags, bool);
-typedef void (istd_stdcall* istd_pfn_char_callback)(istd_window, char32_t, istd_key_modifier_flags);
+typedef void (* istd_pfn_key_callback)(istd_window, istd_key, istd_key_modifier_flags, bool);
+typedef void (* istd_pfn_char_callback)(istd_window, char32_t, istd_key_modifier_flags);
 
 typedef istd_pfn_window_size_callback istd_pfn_dpi_callback;
 
-typedef void (istd_stdcall* istd_pfn_path_drop_callback)(istd_window, wchar_t**, size_t);
+typedef void (* istd_pfn_path_drop_callback)(istd_window, wchar_t**, size_t);
 
-static void istd_stdcall istd_defualt_window_size_callback(istd_window window, istd_vector2_i32 size) { 
+static void istd_defualt_window_size_callback(istd_window window, istd_vector2_i32 size) { 
 	istd_unused_parameter(window);
 	istd_unused_parameter(size);
 }
 
-static void istd_stdcall istd_defualt_framebuffer_size_callback(istd_window window, istd_vector2_i32 size) {
+static void istd_defualt_framebuffer_size_callback(istd_window window, istd_vector2_i32 size) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(size);
 }
 
-static void istd_stdcall istd_defualt_window_move_callback(istd_window window, istd_vector2_i32 position) {
+static void istd_defualt_window_move_callback(istd_window window, istd_vector2_i32 position) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(position);
 }
 
-static void istd_stdcall istd_defualt_window_iconified_callback(istd_window window, bool iconified) {
+static void istd_defualt_window_iconified_callback(istd_window window, bool iconified) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(iconified);
 }
 
-static void istd_stdcall istd_defualt_window_maximized_callback(istd_window window, bool maximized) {
+static void istd_defualt_window_maximized_callback(istd_window window, bool maximized) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(maximized);
 }
 
-static void istd_stdcall istd_defualt_mouse_move_callback(istd_window window, istd_vector2_i32 position) {
+static void istd_defualt_mouse_move_callback(istd_window window, istd_vector2_i32 position) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(position);
 }
 
-static void istd_stdcall istd_defualt_mouse_scroll_callback(istd_window window, istd_vector2_f32 scroll_offset) {
+static void istd_defualt_mouse_scroll_callback(istd_window window, istd_vector2_f32 scroll_offset) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(scroll_offset);
 }
 
-static void istd_stdcall istd_defualt_mouse_button_callback(istd_window window, istd_mouse_button button, istd_key_modifier_flags mods, bool down) {
+static void istd_defualt_mouse_button_callback(istd_window window, istd_mouse_button button, istd_key_modifier_flags mods, bool down) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(button);
 	istd_unused_parameter(mods);
 	istd_unused_parameter(down);
 }
 
-static void istd_stdcall istd_defualt_mouse_entered_callback(istd_window window, bool entered) {
+static void istd_defualt_mouse_entered_callback(istd_window window, bool entered) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(entered);
 }
 
-static void istd_stdcall istd_defualt_key_callback(istd_window window, istd_key key, istd_key_modifier_flags mods, bool down) {
+static void istd_defualt_key_callback(istd_window window, istd_key key, istd_key_modifier_flags mods, bool down) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(key);
 	istd_unused_parameter(mods);
 	istd_unused_parameter(down);
 }
 
-static void istd_stdcall istd_defualt_char_callback(istd_window window, char32_t character, istd_key_modifier_flags mods) {
+static void istd_defualt_char_callback(istd_window window, char32_t character, istd_key_modifier_flags mods) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(character);
 	istd_unused_parameter(mods);
 }
 
-static void istd_stdcall istd_defualt_dpi_callback(istd_window window, istd_vector2_i32 new_dpi) {
+static void istd_defualt_dpi_callback(istd_window window, istd_vector2_i32 new_dpi) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(new_dpi);
 }
 
-static void istd_stdcall istd_defualt_path_drop_callback(istd_window window, wchar_t** paths, size_t paths_size) {
+static void istd_defualt_path_drop_callback(istd_window window, wchar_t** paths, size_t paths_size) {
 	istd_unused_parameter(window);
 	istd_unused_parameter(paths);
 	istd_unused_parameter(paths_size);

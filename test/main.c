@@ -6,6 +6,7 @@
 #include "tests/linked_list/linked_list_test.h"
 #include "tests/dynamic_array/dynamic_array_test.h"
 #include "tests/io/io_test.h"
+#include "tests/image/image_test.h"
 
 int main(void) {
 	istd_test(test_dynamic_array, "Dynamic Array");
@@ -14,6 +15,7 @@ int main(void) {
 	istd_test(test_thread, "Thread");
 	istd_test(test_unordered_map, "Unordered Map");
 	istd_test(test_io, "IO");
+    istd_test(test_image, "Image");
 	istd_test(test_window, "Window");
 
 	return 0;

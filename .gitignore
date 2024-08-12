@@ -61,3 +61,12 @@ MakeFile
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+src/CMakeFiles
+test/CMakeFiles
+CMakeFiles
+*.cmake
+*.ninja
+.ninja_deps
+.ninja_log
+CMakeCache.txt
+compile_commands.json

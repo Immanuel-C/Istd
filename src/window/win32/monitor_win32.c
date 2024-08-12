@@ -1,6 +1,7 @@
 #include "monitor_win32.h"
+#include <stdio.h>
 
-#define WIN32_LEAN_AND_MEAN
+// #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <shellscalingapi.h>
 
@@ -21,7 +22,7 @@ typedef struct {
 
 
 istd_monitor_win32 istd_monitor_win32_primary(
-	_In_opt_ istd_allocator* allocator
+	istd_allocator* allocator
 ) {
 	istd_allocator* alloc = allocator;
 
@@ -92,25 +93,24 @@ static BOOL CALLBACK monitor_callback(HMONITOR hmonitor, HDC hdc, LPRECT monitor
 
 	__istd_monitor_callback_info* callback_info = (__istd_monitor_callback_info*)user_data;
 
-	MONITORINFOEX monitor_info = { 0 };
-	monitor_info.cbSize = sizeof(MONITORINFOEX);
+	MONITORINFOEXW monitor_info = { 0 };
+	monitor_info.cbSize = sizeof(MONITORINFOEXW);
 
 	if (GetMonitorInfoW(hmonitor, (LPMONITORINFO)&monitor_info) == FALSE)
 		return FALSE;
 
-	callback_info->monitors[callback_info->index]->hmonitor = hmonitor;
-	callback_info->monitors[callback_info->index]->size = (istd_vector2_i32){ (int32_t)(monitor_info.rcMonitor.right - monitor_info.rcMonitor.left), (int32_t)(monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top) };
-	callback_info->monitors[callback_info->index]->position = (istd_vector2_i32){ (int32_t)(monitor_info.rcMonitor.left), (int32_t)(monitor_info.rcMonitor.top) };
+        callback_info->monitors[callback_info->index]->hmonitor = hmonitor;
+	callback_info->monitors[callback_info->index]->size = (istd_vector2_i32){ {(int32_t)(monitor_info.rcMonitor.right - monitor_info.rcMonitor.left)}, {(int32_t)(monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top)} };
+	callback_info->monitors[callback_info->index]->position = (istd_vector2_i32){ {(int32_t)(monitor_info.rcMonitor.left)}, {(int32_t)(monitor_info.rcMonitor.top)} };
 
 	UINT dpi_x = 0, dpi_y = 0;
-	if (GetDpiForMonitor(hmonitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y) != S_OK) {
-		return FALSE;
-	}
+	if (GetDpiForMonitor(hmonitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y) != S_OK)
+        return FALSE;
 
-	callback_info->monitors[callback_info->index]->dpi = (istd_vector2_i32){ (int32_t)(dpi_x), (int32_t)(dpi_y) };
+	callback_info->monitors[callback_info->index]->dpi = (istd_vector2_i32){ {(int32_t)(dpi_x)}, {(int32_t)(dpi_y)} };
 
 	if (istd_wcscpy_safe(callback_info->monitors[callback_info->index]->name, CCHDEVICENAME, monitor_info.szDevice) != ISTD_ENONE)
-		return FALSE;
+	    return FALSE;
 
 	callback_info->index++;
 
@@ -118,8 +118,8 @@ static BOOL CALLBACK monitor_callback(HMONITOR hmonitor, HDC hdc, LPRECT monitor
 }
 
 istd_monitor_win32* istd_monitor_win32_all(
-	_In_	 size_t* monitor_count,
-	_In_opt_ istd_allocator* allocator
+	size_t* monitor_count,
+	istd_allocator* allocator
 ) {
 	istd_allocator* alloc = allocator;
 
@@ -133,8 +133,10 @@ istd_monitor_win32* istd_monitor_win32_all(
 
 	__istd_monitor_win32** monitors = alloc->malloc((*monitor_count) * sizeof(__istd_monitor_win32*));
 
-	if (monitors == istd_nullptr)
-		return istd_nullptr;
+	if (monitors == istd_nullptr) {
+		printf("Failed to allocate monitors!");
+        return istd_nullptr;
+    }
 
 	for (size_t i = 0; i < (*monitor_count); i++) {
 		monitors[i] = alloc->malloc(sizeof(__istd_monitor_win32));
@@ -156,6 +158,8 @@ istd_monitor_win32* istd_monitor_win32_all(
 
 		alloc->free(monitors);
 
+        printf("EnumDisplayMonitors failed!");
+
 		return istd_nullptr;
 	}
 
@@ -163,38 +167,38 @@ istd_monitor_win32* istd_monitor_win32_all(
 }
 
 const wchar_t* istd_monitor_win32_name(
-	_In_ istd_monitor_win32 monitor
+	istd_monitor_win32 monitor
 ) {
 	return (const wchar_t*)((__istd_monitor_win32*)monitor)->name;
 }
 
 istd_vector2_i32 istd_monitor_win32_size(
-	_In_ istd_monitor_win32 monitor
+	istd_monitor_win32 monitor
 ) {
 	return ((__istd_monitor_win32*)monitor)->size;
 }
 
 istd_vector2_i32 istd_monitor_win32_position(
-	_In_ istd_monitor_win32 monitor
+	istd_monitor_win32 monitor
 ) {
 	return ((__istd_monitor_win32*)monitor)->position;
 }
 
 istd_vector2_i32 istd_monitor_win32_dpi(
-	_In_ istd_monitor_win32 monitor
+	istd_monitor_win32 monitor
 ) {
 	return ((__istd_monitor_win32*)monitor)->dpi;
 }
 
 uintptr_t istd_monitor_win32_hmonitor(
-	_In_ istd_monitor_win32 monitor
+	istd_monitor_win32 monitor
 ) {
 	return (uintptr_t)(((__istd_monitor_win32*)monitor)->hmonitor);
 }
 
 void istd_monitor_win32_free(
-	_In_ istd_monitor_win32* monitors,
-	_In_ size_t monitors_count
+	istd_monitor_win32* monitors,
+	size_t monitors_count
 ) {
 	for (size_t i = 0; i < monitors_count; i++) {
 		__istd_monitor_win32* _monitor = (__istd_monitor_win32*)monitors[i];

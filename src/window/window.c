@@ -10,12 +10,12 @@
 
 #endif
 
-_Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window istd_window_create(
-	_In_z_ const wchar_t* title,
-	_In_ int32_t width,
-	_In_ int32_t height,
-	_In_ int32_t x,
-	_In_ int32_t y
+istd_window istd_window_create(
+	const wchar_t* title,
+	int32_t width,
+	int32_t height,
+	int32_t x,
+	int32_t y
 ) {
 	#if defined(_WIN32)
 
@@ -31,8 +31,8 @@ _Check_return_ _Ret_maybenull_ _Success_(return != istd_nullhnd) istd_window ist
 	#endif
 }
 
-_Check_return_ bool istd_window_running(
-	_In_ istd_window window
+bool istd_window_running(
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -42,7 +42,7 @@ _Check_return_ bool istd_window_running(
 }
 
 void istd_window_update(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -52,7 +52,7 @@ void istd_window_update(
 }
 
 void istd_window_wait_event(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -62,7 +62,7 @@ void istd_window_wait_event(
 }
 
 istd_vector2_i32 istd_window_size(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -72,7 +72,7 @@ istd_vector2_i32 istd_window_size(
 }
 
 istd_vector2_i32 istd_window_position(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -82,7 +82,7 @@ istd_vector2_i32 istd_window_position(
 }
 
 istd_vector2_f32 istd_window_mouse_scroll_offset(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -92,7 +92,7 @@ istd_vector2_f32 istd_window_mouse_scroll_offset(
 }
 
 istd_vector2_i32 istd_window_mouse_position(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -102,9 +102,9 @@ istd_vector2_i32 istd_window_mouse_position(
 }
 
 bool istd_window_mouse_button_down(
-	_In_ istd_window window,
-	_In_ istd_mouse_button button,
-	_In_ istd_key_modifier_flags mods
+	istd_window window,
+	istd_mouse_button button,
+	istd_key_modifier_flags mods
 ) {
 	#if defined(_WIN32)
 
@@ -114,9 +114,9 @@ bool istd_window_mouse_button_down(
 }
 
 bool istd_window_key_down(
-	_In_ istd_window window,
-	_In_ istd_key key,
-	_In_ istd_key_modifier_flags mods
+	istd_window window,
+	istd_key key,
+	istd_key_modifier_flags mods
 ) {
 	#if defined(_WIN32)
 
@@ -125,10 +125,10 @@ bool istd_window_key_down(
 	#endif
 }
 
-_Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_set_callback(
-	_Inout_ istd_window window,
-	_In_    void* callback_fun,
-	_In_    int callback_type
+void* istd_window_set_callback(
+	istd_window window,
+	void* callback_fun,
+	int callback_type
 ) {
 	#if defined(_WIN32)
 
@@ -139,8 +139,8 @@ _Success_(return == istd_nullptr) _Ret_maybenull_ void* istd_window_set_callback
 
 
 void istd_window_set_user_ptr(
-	_In_ istd_window window,
-	_In_ void* ptr
+	istd_window window,
+	void* ptr
 ) {
 	#if defined(_WIN32)
 
@@ -149,8 +149,8 @@ void istd_window_set_user_ptr(
 	#endif
 }
 
-_Ret_maybenull_ void* istd_window_get_user_ptr(
-	_In_ istd_window window
+void* istd_window_get_user_ptr(
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -160,7 +160,7 @@ _Ret_maybenull_ void* istd_window_get_user_ptr(
 }
 
 istd_float64 istd_window_get_time_ms(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -170,8 +170,8 @@ istd_float64 istd_window_get_time_ms(
 }
 
 void istd_window_center(
-	_In_ istd_window window,
-	_In_ istd_monitor monitor
+	istd_window window,
+	istd_monitor monitor
 ) {
 	#if defined(_WIN32)
 
@@ -181,7 +181,7 @@ void istd_window_center(
 }
 
 bool istd_window_iconified(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -191,7 +191,7 @@ bool istd_window_iconified(
 }
 
 bool istd_window_maximized(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -201,7 +201,7 @@ bool istd_window_maximized(
 }
 
 bool istd_window_focused(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -211,7 +211,7 @@ bool istd_window_focused(
 }
 
 bool istd_window_mouse_entered(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -221,7 +221,7 @@ bool istd_window_mouse_entered(
 }
 
 void istd_window_close(
-	_In_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -232,7 +232,7 @@ void istd_window_close(
 
 
 void istd_window_free(
-	_Pre_valid_ _Post_invalid_ istd_window window
+	istd_window window
 ) {
 	#if defined(_WIN32)
 
@@ -240,4 +240,3 @@ void istd_window_free(
 
 	#endif
 }
-

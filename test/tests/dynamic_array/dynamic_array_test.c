@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-istd_test_msg istd_stdcall test_dynamic_array(void) {
+istd_test_msg test_dynamic_array(void) {
 	istd_test_msg msg = { 0 };
 
 	istd_dynamic_array dynamic_array = istd_dynamic_array_create(int, 2, istd_nullptr);

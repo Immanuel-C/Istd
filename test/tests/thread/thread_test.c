@@ -9,7 +9,7 @@ typedef struct thread_info_t {
 } thread_info;
 
 
-static void* istd_stdcall thread_fun(void* arg) {
+static void* thread_fun(void* arg) {
 	thread_info* info = (thread_info*)arg;
 
 	printf("Thread ID: %zu, x: %zu, y: %zu, z: %zu\n", (uint64_t)istd_thread_get_current_id(), info->x, info->y, info->z);
@@ -19,7 +19,7 @@ static void* istd_stdcall thread_fun(void* arg) {
 	return istd_nullptr;
 }
 
-istd_test_msg istd_stdcall test_thread(void) {
+istd_test_msg test_thread(void) {
 	istd_test_msg msg = { 0 };
 
 	thread_info info = {
