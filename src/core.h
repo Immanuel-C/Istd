@@ -15,9 +15,6 @@ ISTD_EXTERN_C
 #include <stdbool.h>
 #include <stdint.h>
 
-// #include "salieri.h"
-// #define WINVER 0x0605
-
 #define istd_define_handle(name) typedef struct name##_t* name
 
 #if defined(__cplusplus)

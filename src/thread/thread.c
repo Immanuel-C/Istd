@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <process.h>
 typedef HANDLE istd_native_thread_handle;
-#define _istd_native_sleep(mili) Sleep(mili)
+#define __istd_native_sleep(mili) Sleep(mili)
 // MacOs/Linux
 #else
 #include <unistd.h>
@@ -20,7 +20,7 @@ typedef pthread_t istd_native_thread_handle;
 istd_api void istd_stdcall istd_this_thread_sleep(
     uint32_t miliseconds
 ) {
-    _istd_native_sleep(miliseconds);
+    __istd_native_sleep(miliseconds);
 }
 
 istd_thread istd_thread_create(

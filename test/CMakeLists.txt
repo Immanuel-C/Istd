@@ -3,6 +3,14 @@ project(Test VERSION 1.0)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
+set(CMAKE_C_EXTENSIONS OFF)
+
+if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -Wextra")
+endif()
+if (MSVC)
+    set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} /W4")
+endif()
 
 add_compile_definitions(_CRT_SECURE_NO_DEPRECATE)
 
