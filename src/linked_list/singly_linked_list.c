@@ -1,7 +1,8 @@
 #include "singly_linked_list.h"
 
-#include "safe/string_safe.h"
 #include "allocator/allocator.h"
+
+#include <string.h>
 
 typedef struct __istd_node_t {
 	void* buf;
@@ -35,17 +36,14 @@ istd_node istd_singly_linked_list_node_create(
 	size_t type_size,
 	istd_allocator* allocator
 ) {
-	istd_allocator* alloc = allocator;
+	istd_allocator alloc = istd_check_allocator(allocator);
 
-	if (alloc == istd_nullptr)
-		alloc = istd_get_defualt_allocator();
-
-	__istd_node* head = alloc->malloc(sizeof(__istd_node));
+	__istd_node* head = alloc.malloc(sizeof(__istd_node));
 	head->buf_size = length * type_size;
-	head->buf = alloc->malloc(head->buf_size);
-	istd_memcpy_safe(head->buf, head->buf_size, buf, head->buf_size);
+	head->buf = alloc.malloc(head->buf_size);
+	memcpy(head->buf, buf, head->buf_size);
 	head->next = istd_nullptr;
-	head->allocator = *alloc;
+	head->allocator = alloc;
 
 	return (istd_node)head;
 }
@@ -67,8 +65,8 @@ void istd_singly_linked_list_pop_front(
 ) {
 	__istd_node* old_head = (__istd_node*)*head;
 
-	istd_assert(head != istd_nullptr, "istd_singly_linked_list_pop_front() failed. Head must not be null.");
-	istd_assert(old_head->next != istd_nullptr, "istd_singly_linked_list_pop_front() failed. Cant pop back a list that has only 1 node.");
+	ISTD_ASSERT(head != istd_nullptr, "istd_singly_linked_list_pop_front() failed. Head must not be null.");
+	ISTD_ASSERT(old_head->next != istd_nullptr, "istd_singly_linked_list_pop_front() failed. Cant pop back a list that has only 1 node.");
 
 	*head = (istd_node)old_head->next;
 

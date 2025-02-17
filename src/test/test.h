@@ -10,9 +10,9 @@ typedef struct {
 	const char* err_msg;
 } istd_test_msg;
 
-typedef istd_test_msg (istd_stdcall* istd_pfn_test)(void);
+typedef istd_test_msg (*istd_pfn_test)(void);
 
-istd_api void istd_stdcall istd_test(
+ISTD_API void istd_test(
 	istd_pfn_test test_fun, 
 	const char* test_name
 );

@@ -5,12 +5,18 @@
 
 ISTD_EXTERN_C
 
-istd_api istd_allocator* istd_get_defualt_allocator(void);
+/**
+ * @brief Get the default allocator provided by the system.
+ * @return The default allocator.
+ */
+ISTD_API istd_allocator istd_get_defualt_allocator(void);
+/** 
+ * @brief Check if the allocator is NULL, if it is return the default allocator.
+ * @return The allocator provided if it is not NULL, otherwise the default allocator.
+*/
+ISTD_API istd_allocator istd_check_allocator(istd_allocator* allocator);
 
-istd_api void istd_set_defualt_allocator(
-	istd_allocator* new_allocator
-);
-
+const char* istd_result_to_string(istd_result result);
 ISTD_END_EXTERN_C
 
 #endif

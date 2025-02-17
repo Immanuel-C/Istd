@@ -13,11 +13,11 @@ typedef HANDLE istd_native_thread_handle;
 #include <unistd.h>
 #include <pthread.h>
 typedef pthread_t istd_native_thread_handle;
-#define _istd_native_sleep(mili) sleep(mili * 0.001)
+#define __istd_native_sleep(mili) sleep(mili * 0.001)
 #endif
 
 
-istd_api void istd_stdcall istd_this_thread_sleep(
+ISTD_API void istd_this_thread_sleep(
     uint32_t miliseconds
 ) {
     __istd_native_sleep(miliseconds);
@@ -30,7 +30,6 @@ istd_thread istd_thread_create(
 
     #if defined(_WIN32)
 
-    istd_disable_warning(4191)
     uintptr_t win32_thread_handle = _beginthreadex(istd_nullptr, 0, (_beginthreadex_proc_type)thread_fun, thread_fun_arg, 0, istd_nullptr);
 
     istd_native_thread_handle thread_handle = (istd_native_thread_handle)win32_thread_handle;

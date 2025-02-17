@@ -23,7 +23,7 @@ istd_timer istd_timer_start(void) {
 	return (istd_timer)timer;
 }
 
-istd_float64 istd_timer_now(
+double istd_timer_now(
 	istd_timer timer,
 	istd_time_units unit
 ) { 
@@ -51,7 +51,7 @@ istd_float64 istd_timer_now(
 	return -1.0;
 }
 
-istd_float64 istd_timer_end(
+double istd_timer_end(
 	istd_timer timer,
 	istd_time_units unit
 ) {

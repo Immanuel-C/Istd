@@ -19,5 +19,5 @@ void istd_test(
 	}
 
 	fprintf(stderr, "%s Test Failed: %s %s\n", ISTD_TEST_DIVIDER, msg.err_msg, ISTD_TEST_DIVIDER);
-	istd_ignore_return(getchar());
+	ISTD_IGNORE_RETURN(getchar());
 }

@@ -5,7 +5,7 @@
 
 ISTD_EXTERN_C
 
-istd_define_handle(istd_unordered_map);
+ISTD_DEFINE_HANDLE(istd_unordered_map);
 
 /**
 * @brief a function pointer that an istd_unordered_map will use to create hashes.
@@ -21,7 +21,7 @@ typedef size_t (*istd_pfn_hash_function)(const void* buf, size_t buf_size);
 @param hash_function a hash function that can take a block of memory and turn it into a hash.
 @returns A valid istd_unordered_map or istd_nullptr if the function fails.
 */
-istd_api istd_unordered_map __istd_unordered_map_create(
+ISTD_API istd_unordered_map __istd_unordered_map_create(
 	const size_t type_size,
 	const size_t capacity,
 	istd_pfn_hash_function hash_function,
@@ -43,7 +43,7 @@ istd_api istd_unordered_map __istd_unordered_map_create(
 * @param value the value to store. The size must equal to the size of the type passed into the istd_unordered_map_create macro.
 * @returns if the function succeds ISTD_RESULT_SUCCESS is returned. ISTD_RESULT_ALLOCATION_FAILED is retunred if the function failed to allocate a new key, value pair.
 */
-istd_api istd_result istd_unordered_map_insert(
+ISTD_API istd_result istd_unordered_map_insert(
 	istd_unordered_map map,
 	const void* key,
 	size_t key_size,
@@ -56,7 +56,7 @@ istd_api istd_result istd_unordered_map_insert(
 * @param key_size the size of the key in bytes.
 * @returns if the function succeds ISTD_RESULT_SUCCESS is returned. ISTD_RESULT_NOT_FOUND if the key is not in the hash map.
 */
-istd_api istd_result istd_unordered_map_erase(
+ISTD_API istd_result istd_unordered_map_erase(
 	istd_unordered_map map,
 	const void* key,
 	size_t key_size
@@ -68,7 +68,7 @@ istd_api istd_result istd_unordered_map_erase(
 * @param key_size the size of the key in bytes.
 * @returns a pointer to the value if found. If the value cannot be found the function returns istd_nullptr;
 */
-istd_api void* __istd_unordered_map_search(
+ISTD_API void* __istd_unordered_map_search(
 	istd_unordered_map map,
 	const void* key,
 	const size_t key_size
@@ -87,14 +87,14 @@ istd_api void* __istd_unordered_map_search(
 * @param map A valid istd_unordered_map.
 * @returns the capacity of the given map.
 */
-istd_api size_t istd_unordered_map_capacity(
+ISTD_API size_t istd_unordered_map_capacity(
 	istd_unordered_map map
 );
 /**
 * @brief free the map and all of the key, value pairs in it.
 * @param map a pointer to a valud istd_unordered_map.
 */
-istd_api istd_result istd_unordered_map_free(
+ISTD_API istd_result istd_unordered_map_free(
 	istd_unordered_map map
 );
 

@@ -12,7 +12,7 @@ ISTD_EXTERN_C
 * @brief Get time since computer started.
 * @returns time since computer started in nanoseconds
 */
-istd_api uint64_t istd_high_resolution_now_ns(void);
+ISTD_API uint64_t istd_high_resolution_now_ns(void);
 
 
 ISTD_END_EXTERN_C

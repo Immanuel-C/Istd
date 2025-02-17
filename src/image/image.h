@@ -18,13 +18,13 @@ typedef struct {
 	istd_allocator allocator;
 } istd_image;
 
-istd_api istd_result istd_image_load(
+ISTD_API istd_result istd_image_load(
 	const char* filename, 
 	istd_image* image, 
 	istd_allocator* allocator
 );
 
-istd_api void istd_image_free(
+ISTD_API void istd_image_free(
 	istd_image* image
 );
 

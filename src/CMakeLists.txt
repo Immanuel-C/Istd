@@ -10,9 +10,8 @@ add_library(Istd STATIC
         allocator/allocator.c
         dynamic_array/dynamic_array.c
         hash_map/unordered_map.c
-        io/io.c
         linked_list/singly_linked_list.c
-        safe/string_safe.c
+        image/image.c
         test/test.c
         thread/thread.c
         time/high_resolution.c

@@ -4,8 +4,6 @@
 #include "time/time.h"
 #include "thread/thread.h"
 
-#include "istd_float.h"
-
 #include <stdio.h>
 
 
@@ -32,7 +30,7 @@ istd_test_msg test_time(void) {
 
 	printf("Time elapsed: %.4fs\n", elasped_time);
 
-	printf("Time since computer started: %fms\n", (istd_float64)(istd_high_resolution_now_ns() / 1000000));
+	printf("Time since computer started: %fms\n", (double)(istd_high_resolution_now_ns() / 1000000));
 
 	msg.passed = true;
 	return msg;

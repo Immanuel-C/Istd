@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 size_t hash_function(const void* buf, size_t len) {
-	uint8_t* bytes = (uint8_t*)buf;
+	const uint8_t* bytes = (const uint8_t*)buf;
 
 	size_t hash = 0;
 

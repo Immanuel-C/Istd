@@ -20,7 +20,6 @@ if (ISTD_BUILD_TEST)
     add_executable(Test 
         main.c
         tests/dynamic_array/dynamic_array_test.c
-        tests/io/io_test.c
         tests/linked_list/linked_list_test.c
         tests/thread/thread_test.c
         tests/time/time_test.c

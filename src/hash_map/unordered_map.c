@@ -1,9 +1,9 @@
 #include "unordered_map.h"
 
-#include "safe/string_safe.h"
 #include "allocator/allocator.h"
 
 #include <string.h>
+#include <stdio.h>
 
 typedef struct __istd_unordered_map_item_t {
 	void* key;
@@ -26,28 +26,25 @@ istd_unordered_map __istd_unordered_map_create(
 	istd_pfn_hash_function hash_function,
 	istd_allocator* allocator
 ) {
-	istd_allocator* alloc = allocator;
+	istd_allocator alloc = istd_check_allocator(allocator);
 
-	if (alloc == istd_nullptr) 
-		alloc = istd_get_defualt_allocator();
-
-	_istd_unordered_map* map = alloc->malloc(sizeof(_istd_unordered_map));
+	_istd_unordered_map* map = alloc.malloc(sizeof(_istd_unordered_map));
 
 	if (map == istd_nullptr) 
 		return istd_nullptr;
 
 	size_t items_size = capacity * sizeof(__istd_unordered_map_item*);
-	map->items = alloc->malloc(items_size);
+	map->items = alloc.malloc(items_size);
 
 	if (map->items == istd_nullptr) {
-		alloc->free(map);
+		alloc.free(map);
 		return istd_nullhnd;
 	}
 
 	map->capacity = capacity;
 	map->type_size = type_size;
 	map->hash_function = hash_function;
-	map->allocator = *alloc;
+	map->allocator = alloc;
 
 	for (size_t i = 0; i < capacity; i++) 
 		map->items[i] = istd_nullptr;
@@ -93,11 +90,8 @@ static __istd_unordered_map_item* __istd_create_item(
 	item->key_size = key_size;
 	item->next = istd_nullptr;
 
-	if (istd_memcpy_safe(item->key, key_size, key, key_size) != ISTD_ENONE || 
-		istd_memcpy_safe(item->value, map->type_size, value, map->type_size) != ISTD_ENONE) {
-		__istd_free_item(map, item);
-		return istd_nullptr;
-	}
+	memcpy(item->key, key, key_size); 
+	memcpy(item->value, value, map->type_size);
 
 	return item;
 }
@@ -112,8 +106,10 @@ istd_result istd_unordered_map_insert(
 	
 	__istd_unordered_map_item* item = __istd_create_item(_map, key, key_size, value);
 
-	if (item == istd_nullptr)
+	if (item == istd_nullptr) {
+
 		return ISTD_RESULT_ALLOCATION_FAILED;
+	}
 
 	size_t index = _map->hash_function(key, key_size) % _map->capacity;
 

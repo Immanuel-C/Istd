@@ -1,8 +1,8 @@
 #include "dynamic_array.h"
 
-#include "safe/string_safe.h"
+#include <string.h>
 
-typedef struct {
+typedef struct __istd_dynamic_array_t {
 	size_t length;
 	size_t capacity;
 	size_t typeSize;
@@ -15,17 +15,14 @@ istd_dynamic_array __istd_dynamic_array_create(
 	size_t length, 
 	istd_allocator* allocator
 ) {
-	istd_allocator* alloc = allocator;
+	istd_allocator alloc = istd_check_allocator(allocator);
 
-	if (allocator == istd_nullptr)
-		alloc = istd_get_defualt_allocator();
-
-	__istd_dynamic_array* arr = alloc->malloc(sizeof(__istd_dynamic_array));
+	__istd_dynamic_array* arr = alloc.malloc(sizeof(__istd_dynamic_array));
 	arr->typeSize = typeSize;
 	arr->length = length;
 	arr->capacity = length;
-	arr->buf = alloc->malloc(typeSize * length);
-	arr->allocator = *alloc;
+	arr->buf = alloc.malloc(typeSize * length);
+	arr->allocator = alloc;
 	return (istd_dynamic_array)arr;
 }
 
@@ -36,7 +33,7 @@ void* __istd_dynamic_array_at(
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
 
 	// Trying to access out of bounds.
-	istd_assert(dynamic_arr->length <= dynamic_arr->capacity, "_istd_dynamic_array_at() failed. Trying to access out of array bounds.");
+	ISTD_ASSERT(index < dynamic_arr->length, "__istd_dynamic_array_at() failed. Trying to access out of array bounds.");
 
 	uint8_t* bytes = dynamic_arr->buf;
 	return (void*)(bytes + (index * dynamic_arr->typeSize));
@@ -54,14 +51,14 @@ void istd_dynamic_array_push_back(
 		dynamic_arr->capacity = dynamic_arr->length;
 	}
 
-	istd_assert(istd_memcpy_safe((uint8_t*)(dynamic_arr->buf) + ((dynamic_arr->length - 1) * dynamic_arr->typeSize), dynamic_arr->length * dynamic_arr->typeSize, val, dynamic_arr->typeSize) == ISTD_ENONE, "istd_dynamic_array_push_back() failed. istd_memcpy_safe() failed.");
+	memcpy((uint8_t*)dynamic_arr->buf + (dynamic_arr->length - 1) * dynamic_arr->typeSize, val, dynamic_arr->typeSize);
 }
 
 void istd_dynamic_array_pop_back(
 	istd_dynamic_array arr
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
-	istd_assert(dynamic_arr->length != 0, "istd_dynamic_array_pop_back() failed. Trying to pop back an empty array.");
+	ISTD_ASSERT(dynamic_arr->length != 0, "istd_dynamic_array_pop_back() failed. Trying to pop back an empty array.");
 	dynamic_arr->length--;
 }
 
@@ -87,7 +84,7 @@ void istd_dynamic_array_shrink_to_fit(
 	istd_dynamic_array arr
 ) {
 	__istd_dynamic_array* dynamic_arr = (__istd_dynamic_array*)arr;
-	istd_assert(dynamic_arr->length < dynamic_arr->capacity, "istd_dynamic_array_shrink_to_fit() failed. The dynamic array length must be smaller than the capacity.");
+	ISTD_ASSERT(dynamic_arr->length < dynamic_arr->capacity, "istd_dynamic_array_shrink_to_fit() failed. The dynamic array length must be smaller than the capacity.");
 	dynamic_arr->buf = dynamic_arr->allocator.realloc(dynamic_arr->buf, dynamic_arr->length * dynamic_arr->typeSize);
 	dynamic_arr->capacity = dynamic_arr->length;
 }
@@ -96,7 +93,7 @@ void istd_dynamic_array_resize(
 	istd_dynamic_array arr, 
 	size_t new_length
 ) {
-	istd_assert(new_length != 0, "istd_dynamic_array_resize() failed. Given size must be greater than 0.");
+	ISTD_ASSERT(new_length != 0, "istd_dynamic_array_resize() failed. Given size must be greater than 0.");
 
 	__istd_dynamic_array* dynamic_array = (__istd_dynamic_array*)arr;
 
@@ -113,5 +110,5 @@ void istd_dynamic_array_free(
 
 	dynamic_array->allocator.free(dynamic_array->buf);
 	dynamic_array->allocator.free(dynamic_array);
-	arr = istd_nullptr;
+	arr = istd_nullhnd;
 }
