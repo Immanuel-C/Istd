@@ -2,7 +2,6 @@
 
 #include "core.h"
 
-#include "time.h"
 
 ISTD_EXTERN_C
 
