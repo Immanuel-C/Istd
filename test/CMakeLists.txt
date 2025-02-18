@@ -27,7 +27,7 @@ if (ISTD_BUILD_TEST)
     )
 
     target_include_directories(Test 
-        PUBLIC "${PROJECT_SOURCE_DIR}/src/"
+        PUBLIC ${PROJECT_SOURCE_DIR}/src/istd
     )
 
     target_link_libraries(Test
